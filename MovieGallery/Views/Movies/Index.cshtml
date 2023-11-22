@@ -1,0 +1,31 @@
+﻿@model IEnumerable<MovieGallery.Models.Movie>
+
+<link rel="stylesheet" href="~/css/movies.css" />
+
+<div class="movies-disp">
+    @foreach (var movie in Model)
+    {
+        <div class="movie-container">
+            <!-- Om ingen bild är uppladdad blir det image-not-found.jpg -->
+            <img src='~/lib/img/@(movie.MovieImage)' />
+            <div class="title-container">
+                <h2>@movie.Title</h2>
+                <p>Filmskapare</p>
+            </div>
+            <div class="genre-rating">
+                <!-- Implementera knapp för att gå till genren -->
+                <button type="submit">
+                    <p>@movie.Genre</p>
+                </button>
+                <div class="rating-container">
+                    <i class="fa-solid fa-star" style="color: #ffd500;"></i>
+                    <!-- Lägg in average rating -->
+                    <p class="avg">avg.</p>
+                    <!--Lägg in antal ratings-->
+                    <p>(n)</p>
+                </div>
+            </div>
+            <p>@movie.ReleaseDate.ToString("yyyy")</p>
+        </div>
+    }
+</div>

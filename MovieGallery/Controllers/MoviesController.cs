@@ -4,11 +4,11 @@ using MovieGallery.Models;
 
 namespace MovieGallery.Controllers
 {
-    public class MovieController : Controller
+    public class MoviesController : Controller
     {
         private readonly ApplicationDbContext _db;
 
-        public MovieController(ApplicationDbContext db)
+        public MoviesController(ApplicationDbContext db)
         {
             _db = db;
         }

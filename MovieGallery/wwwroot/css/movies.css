@@ -1,0 +1,55 @@
+﻿.movies-disp {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 100px
+}
+.movie-container img {
+    width: 100%;
+    height: 450px;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+.movie-container {
+    outline: 1px solid rgba(0,0,0, 0.1);
+}
+.movie-container > :not(:first-child) {
+    margin-left: 20px;
+}
+.movie-container .genre-rating {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+.genre-rating .rating-container {
+    display: flex;
+    align-items: center;
+}
+.rating-container p:last-of-type {
+    margin-left: 20px;
+    font-weight: lighter;
+}
+.genre-rating .rating-container p {
+    margin-bottom: 0;
+}
+.movie-container button {
+    outline: none;
+    border: none;
+    height: 35px;
+    cursor: pointer;
+    border-radius: 10px;
+    background: #556090;
+    color: #ffff;
+}
+.movie-container button:hover {
+    background: #556090;
+    background: #457acf;
+}
+.movie-container .title-container {
+    height: 130px;
+    width: 300px;
+}
+.movie-container button p {
+    margin: 0;
+}
+
