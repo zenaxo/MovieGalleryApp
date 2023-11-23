@@ -1,1 +1,2 @@
 DROP PROCEDURE IF EXISTS SelectAllProducers;
+DROP PROCEDURE IF EXISTS GetMovieRatings;
