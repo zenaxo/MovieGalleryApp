@@ -7,14 +7,14 @@
     {
         <div class="movie-container">
             <!-- Om ingen bild är uppladdad blir det image-not-found.jpg -->
-            <img src='~/lib/img/@(movie.MovieImage)' />
+            <img src='~/lib/img/@(movie.MovieImage)' class="movie-image" data-movie-id="@movie.MovieID" />
             <div class="title-container">
                 <h2>@movie.Title</h2>
                 <p>Filmskapare</p>
             </div>
             <div class="genre-rating">
                 <!-- Implementera knapp för att gå till genren -->
-                <button type="submit">
+                <button type="submit" class="genre-button">
                     <p>@movie.Genre</p>
                 </button>
                 <div class="rating-container">
@@ -23,9 +23,14 @@
                     <p class="avg">avg.</p>
                     <!--Lägg in antal ratings-->
                     <p>(n)</p>
+                    <button class="edit-movie" type="submit">
+                        <p>Edit</p>
+                        <i class="fa-solid fa-pen-to-square" style="color: #373c5a;"></i>
+                    </button>
                 </div>
             </div>
             <p>@movie.ReleaseDate.ToString("yyyy")</p>
         </div>
     }
 </div>
+<script src="~/js/goToMovieDetails.js" />

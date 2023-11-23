@@ -23,7 +23,16 @@ namespace MovieGallery.Controllers
         {
             return View();
         }
-
+        //GET
+        public IActionResult Details(int id)
+        {
+            Movie movie = _db.Movies.FirstOrDefault(m => m.MovieID == id);
+            if (movie == null)
+            {
+                return NotFound();
+            }
+            return View(movie);
+        }
         //POST
         [HttpPost]
         [ValidateAntiForgeryToken]
