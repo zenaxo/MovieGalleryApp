@@ -46,5 +46,26 @@ namespace MovieGallery.Controllers
             }
             return View(obj);
         }
+
+        public IActionResult InsertMovie()
+        {
+            MovieDetail movieDetail = new MovieDetail();
+            MovieMethods movieMethods = new MovieMethods();
+
+            //('The Shawshank Redemption', 'Drama', 'the_shawshank_redemption_.jpg', '1994-09-10')
+            int i = 0;
+            string error = "";
+
+            movieDetail.Title = "The Shawshank Redemption";
+            movieDetail.Genre = "Drama";
+            movieDetail.MovieImage = "the_shawshank_redemption_.jpg";
+            movieDetail.ReleaseDate = new DateTime(1994, 09, 10);
+
+            i = movieMethods.InsertMovie(movieDetail, out error);
+            ViewBag.error = error;
+            ViewBag.antal = i;
+
+            return View();
+        }
     }
 }
