@@ -12,8 +12,13 @@ namespace MovieGallery.Models
         public string Title { get; set; }
         [Required]
         public string Genre { get; set; }
+        [DisplayName("Release Date")]
         public DateTime ReleaseDate { get; set; }
-        public string MovieImage { get; set; }
+        [DisplayName("Movie Cover")]
+        public string? MovieImage { get; set; }
+        [NotMapped]
+        [DisplayName("Movie Cover File")]
+        public IFormFile ImageFile { get; set; }
     }
 
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using MovieGallery.Data;
 using MovieGallery.Models;
 
@@ -7,10 +8,12 @@ namespace MovieGallery.Controllers
     public class MoviesController : Controller
     {
         private readonly ApplicationDbContext _db;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public MoviesController(ApplicationDbContext db)
+        public MoviesController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
         {
             _db = db;
+            _webHostEnvironment = webHostEnvironment;
         }
         public IActionResult Index()
         {
@@ -40,32 +43,45 @@ namespace MovieGallery.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.Movies.Add(obj);
-                _db.SaveChanges();
-                return RedirectToAction("Index");
+                // Check if an image file is uploaded
+                if (obj.ImageFile != null && obj.ImageFile.Length > 0)
+                {
+                    // Generate a unique filename for the image
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + obj.ImageFile.FileName;
+
+                    // Set the path for saving the image in the wwwroot/images folder
+                    string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", uniqueFileName);
+
+                    // Save the image to the specified path
+                    using (var fileStream = new FileStream(imagePath, FileMode.Create))
+                    {
+                        obj.ImageFile.CopyTo(fileStream);
+                    }
+
+                    // Set the MovieImage property to the unique filename
+                    obj.MovieImage = uniqueFileName;
+                }
+                MovieMethods movieMethods = new MovieMethods();
+
+                int i = 0;
+                string error = "";
+
+                i = movieMethods.InsertMovie(obj, out error);
+
+                if (i > 0)
+                {
+                    // Movie successfully inserted, redirect to Index
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    // Handle the case where movie insertion failed
+                    ModelState.AddModelError("", $"Failed to insert movie: {error}");
+                }
             }
+
+            // If ModelState is not valid, return to the same view with validation errors
             return View(obj);
-        }
-
-        public IActionResult InsertMovie()
-        {
-            Movie movie = new Movie();
-            MovieMethods movieMethods = new MovieMethods();
-
-            //('The Shawshank Redemption', 'Drama', 'the_shawshank_redemption_.jpg', '1994-09-10')
-            int i = 0;
-            string error = "";
-
-            movie.Title = "The Shawshank Redemption";
-            movie.Genre = "Drama";
-            movie.MovieImage = "the_shawshank_redemption_.jpg";
-            movie.ReleaseDate = new DateTime(1994, 09, 10);
-
-            i = movieMethods.InsertMovie(movie, out error);
-            ViewBag.error = error;
-            ViewBag.antal = i;
-
-            return View();
         }
     }
 }
