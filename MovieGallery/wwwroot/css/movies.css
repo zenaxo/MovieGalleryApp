@@ -47,7 +47,7 @@
     background: #457acf;
 }
 .edit-movie {
-    background: inherit;
+    background: none;
     padding: 0;
     border: 0;
     display: flex;
