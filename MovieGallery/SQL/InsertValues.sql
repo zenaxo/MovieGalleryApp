@@ -38,5 +38,3 @@ VALUES
 UPDATE Movies
 SET MovieImage = 'the_shawshank_redemption_.jpg'
 WHERE Title = 'The Shawshank Redemption'
-
-INSERT INTO Movies (Title, Genre, MovieImage, ReleaseDate) VALUES ('The Shawshank Redemption', 'Drama', 'the_shawshank_redemption_.jpg', '1994-09-10')
