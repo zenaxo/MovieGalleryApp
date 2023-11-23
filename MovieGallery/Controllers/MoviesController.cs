@@ -49,19 +49,19 @@ namespace MovieGallery.Controllers
 
         public IActionResult InsertMovie()
         {
-            MovieDetail movieDetail = new MovieDetail();
+            Movie movie = new Movie();
             MovieMethods movieMethods = new MovieMethods();
 
             //('The Shawshank Redemption', 'Drama', 'the_shawshank_redemption_.jpg', '1994-09-10')
             int i = 0;
             string error = "";
 
-            movieDetail.Title = "The Shawshank Redemption";
-            movieDetail.Genre = "Drama";
-            movieDetail.MovieImage = "the_shawshank_redemption_.jpg";
-            movieDetail.ReleaseDate = new DateTime(1994, 09, 10);
+            movie.Title = "The Shawshank Redemption";
+            movie.Genre = "Drama";
+            movie.MovieImage = "the_shawshank_redemption_.jpg";
+            movie.ReleaseDate = new DateTime(1994, 09, 10);
 
-            i = movieMethods.InsertMovie(movieDetail, out error);
+            i = movieMethods.InsertMovie(movie, out error);
             ViewBag.error = error;
             ViewBag.antal = i;
 

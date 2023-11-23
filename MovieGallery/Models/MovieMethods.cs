@@ -10,7 +10,7 @@ namespace MovieGallery.Models
     {
         string connectionString = "Data Source = (localdb)\\MSSQLLocalDB;Initial Catalog = MovieGallery; Integrated Security = True; Connect Timeout = 30; Encrypt=False;Trust Server Certificate=False;Application Intent = ReadWrite; Multi Subnet Failover=False";
 
-        public int InsertMovie(MovieDetail movie, out string errormsg)
+        public int InsertMovie(Movie movie, out string errormsg)
         {
             // Create SQL Connection
             SqlConnection dbConnection = new SqlConnection();
