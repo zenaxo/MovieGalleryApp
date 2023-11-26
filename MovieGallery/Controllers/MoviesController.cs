@@ -18,6 +18,24 @@ namespace MovieGallery.Controllers
             string errormsg;
 
             // Check if the flag is present in TempData
+            if(TempData.ContainsKey("FilterGenres"))
+            {
+                // Filter logic here
+                string genre = ViewBag.genre;
+                List<Movie> filteredMovieList = movieMethods.GetMoviesFilteredByGenre(genre, out errormsg);
+
+                if(!string.IsNullOrEmpty(errormsg))
+                {
+                    ViewBag.ErrorMessage = errormsg;
+                }
+
+                // Clear the flag from TempData
+                TempData.Remove("FilterGenres");
+
+                return View(new MoviesViewModel { Movies = filteredMovieList, RatingMethods = new RatingMethods() });
+            }
+
+            // Check if the flag is present in TempData
             if (TempData.ContainsKey("SortByRating"))
             {
                 // Sorting logic here
@@ -45,6 +63,25 @@ namespace MovieGallery.Controllers
 
             return View(new MoviesViewModel { Movies = objMovieList, RatingMethods = new RatingMethods() });
         }
+
+        public IActionResult FilterGenres(string genre)
+        {
+            ViewBag.genre = genre;
+            MovieMethods movieMethods = new MovieMethods();
+            string errormsg;
+            List<Movie> filteredMovieList = movieMethods.GetMoviesFilteredByGenre(genre, out errormsg);
+
+            if (!string.IsNullOrEmpty(errormsg))
+            {
+                ViewBag.Error = errormsg;
+            }
+
+            TempData["FilterGenres"] = true;
+
+            return RedirectToAction("Index");
+
+        }
+
         public IActionResult SortByRating()
         {
             RatingMethods ratingMethods = new RatingMethods();
@@ -165,7 +202,8 @@ namespace MovieGallery.Controllers
                 if (obj.ImageFile != null && obj.ImageFile.Length > 0)
                 {
                     // Generate a unique filename for the image
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + obj.ImageFile.FileName;
+                    FileInfo fileInfo = new FileInfo(obj.ImageFile.FileName);
+                    string uniqueFileName = Guid.NewGuid().ToString() + fileInfo.Extension;
 
                     // Set the path for saving the image in the wwwroot/images folder
                     string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", uniqueFileName);

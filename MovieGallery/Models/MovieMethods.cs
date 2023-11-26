@@ -189,5 +189,63 @@ namespace MovieGallery.Models
             }
 
         }
+
+        public List<Movie> GetMoviesFilteredByGenre(string genre, out string errormsg)
+        {
+            // Create SQL Connection
+            SqlConnection conn = new SqlConnection();
+
+            // Connection to the SQL Server
+            conn.ConnectionString = connectionString;
+
+            // Use a store procedure to retrieve movies filtered by genre
+            SqlCommand sqlCommand = new SqlCommand("GetMoviesFilteredByGenre", conn)
+            {
+                CommandType = System.Data.CommandType.StoredProcedure
+            };
+
+            sqlCommand.Parameters.Add("@Genre", System.Data.SqlDbType.VarChar).Value = genre;
+
+            List<Movie> results = new List<Movie>();
+
+            try
+            {
+                conn.Open();
+
+                // Execute the stored procedure
+                SqlDataReader reader = sqlCommand.ExecuteReader();
+
+                // Check if there are any rows returned
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        // Create a Movie object for each row and add it to the list
+                        Movie movie = new Movie
+                        {
+                            MovieID = Convert.ToInt32(reader["MovieID"]),
+                            Title = reader["Title"].ToString(),
+                            Genre = reader["Genre"].ToString(),
+                            MovieImage = reader["MovieImage"].ToString(),
+                            ReleaseDate = Convert.ToDateTime(reader["ReleaseDate"])
+                        };
+
+                        results.Add(movie);
+                    }
+                }
+
+                errormsg = "";
+            }
+            catch (Exception ex)
+            {
+                errormsg = ex.Message;
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return results;
+        }
     }
 }

@@ -14,7 +14,7 @@ CREATE TABLE Movies (
 	MovieID INT IDENTITY (1,1) PRIMARY KEY,
 	Title VARCHAR(255) NOT NULL,
 	Genre VARCHAR(50) NOT NULL,
-	MovieImage VARCHAR(50) DEFAULT ('image-not-found.jpg'),
+	MovieImage VARCHAR(250) DEFAULT ('image-not-found.jpg'),
 	ReleaseDate DATE
 );
 
