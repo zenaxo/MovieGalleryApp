@@ -1,35 +1,46 @@
-﻿@model IEnumerable<MovieGallery.Models.Movie>
-
-<link rel="stylesheet" href="~/css/movies.css" />
-
+﻿@model MoviesViewModel
+<link rel="stylesheet" href="~/css/movies.css" asp-append-version="true" />
+<button type="button" class="sort-button" onclick="location.href='@Url.Action("SortByRating", "Movies")'">
+    Sort By Rating
+</button>
 <div class="movies-disp">
-    @foreach (var movie in Model)
+    @foreach (var movie in Model.Movies)
     {
-        <div class="movie-container">
-            <!-- Om ingen bild är uppladdad blir det image-not-found.jpg -->
+        <div class="movie-container" id="@movie.MovieID">
             <img src='~/images/@(movie.MovieImage)' class="movie-image" data-movie-id="@movie.MovieID" />
             <div class="title-container">
                 <h2>@movie.Title</h2>
             </div>
             <div class="genre-rating">
-                <!-- Implementera knapp för att gå till genren -->
                 <button type="submit" class="genre-button">
                     <p>@movie.Genre</p>
                 </button>
                 <div class="rating-container">
-                    <i class="fa-solid fa-star" style="color: #ffd500;"></i>
-                    <!-- Lägg in average rating -->
-                    <p class="avg">avg.</p>
-                    <!--Lägg in antal ratings-->
-                    <p>(n)</p>
-                    <button class="edit-movie" type="submit">
-                        <p>Edit</p>
-                        <i class="fa-solid fa-pen-to-square" style="color: #373c5a;"></i>
-                    </button>
+                    @{
+                        var averageRating = Model.RatingMethods.GetAverageRating(movie.MovieID, out string avgErrorMsg);
+                        var numberOfRatings = Model.RatingMethods.GetNumberOfRatings(movie.MovieID, out string numErrorMsg);
+                    }
+                    <div class="avg-rating">
+                        <i class="fa-solid fa-star" style="color: #ffd500;"></i>
+                        <p class="avg">@averageRating.ToString("0.0")</p>
+                    </div>
+                    <div class="num-ratings">
+                        <p>(@numberOfRatings)</p>
+                    </div>
                 </div>
+                <a asp-action="Edit" asp-route-id="@movie.MovieID" class="edit-movie">
+                    <p>Edit</p>
+                    <i class="fa-solid fa-pen-to-square" style="color: #373c5a;"></i>
+                </a>
+                <button class="edit-movie" type="button">
+                    <p>Delete</p>
+                    <i class="fa-solid fa-trash" style="color: #373c5a;"></i>
+                </button>
             </div>
             <p>@movie.ReleaseDate.ToString("yyyy")</p>
         </div>
     }
 </div>
-<script src="~/js/goToMovieDetails.js" />
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="~/js/goToMovieDetails.js"></script>
+<script src="~/js/sortMoviesByRating.js"></script>

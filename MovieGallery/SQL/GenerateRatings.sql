@@ -22,7 +22,7 @@ BEGIN
 END
 
 -- Inserting 50 to 400 ratings for 'Pulp Fiction'
-DECLARE @MovieIDPulpFiction INT = 3; -- Replace with the actual MovieID
+DECLARE @MovieIDPulpFiction INT = 14; -- Replace with the actual MovieID
 SET @Counter = 1;
 
 WHILE @Counter <= 400
