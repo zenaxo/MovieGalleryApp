@@ -10,5 +10,4 @@ public static class GlobalVariables
         Genres.Add("Horror");
         Genres.Add("Comedy");
     }
-    
 }

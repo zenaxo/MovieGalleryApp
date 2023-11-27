@@ -14,7 +14,7 @@ CREATE TABLE Movies (
 	MovieID INT IDENTITY (1,1) PRIMARY KEY,
 	Title VARCHAR(255) NOT NULL,
 	Genre VARCHAR(50) NOT NULL,
-	MovieImage VARCHAR(50) DEFAULT ('image-not-found.jpg'),
+	MovieImage NVARCHAR(1000) DEFAULT ('image-not-found.jpg'),
 	[MovieDescription] VARCHAR(1000) NOT NULL DEFAULT ('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'), 
 	ReleaseDate DATE
 );

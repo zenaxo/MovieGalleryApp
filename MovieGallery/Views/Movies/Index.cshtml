@@ -17,7 +17,7 @@
     <button type="button" class="btn btn-primary filter-button" onclick="applyGenreFilter()">Apply</button>
 </form>
 <div class="header">
-    <h2>Movies in the @Model.FilterOption Category</h2>
+    <h2>@Model.FilterOption movies</h2>
 </div>
 <div class="movies-disp">
     @if (Model.Movies.Count != 0)
@@ -82,7 +82,7 @@
     }
     else
     {
-        <h2>No movies available</h2>
+        <h3>No movies available</h3>
     }
 
 </div>

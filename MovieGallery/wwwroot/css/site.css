@@ -23,3 +23,15 @@ body {
 nav {
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
+.search-container {
+    position: absolute;
+    margin-left: 180px;
+    z-index: 999;
+}
+.search-container a {
+    text-decoration: none;
+    color: inherit;
+}
+.search-container a:hover {
+    text-decoration: underline;
+}

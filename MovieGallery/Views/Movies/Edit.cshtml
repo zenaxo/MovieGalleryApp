@@ -14,10 +14,15 @@
     </div>
     <div class="form-group">
         <label asp-for="Genre"></label>
-        <input asp-for="Genre" class="form-control" />
+        <select asp-for="Genre" class="form-select" aria-label="Default select example">
+            <option value="">Select Genre</option>
+            @foreach (var genre in GlobalVariables.Genres)
+            {
+                <option value="@genre">@genre</option>
+            }
+        </select>
         <span asp-validation-for="Genre" class="text-danger"></span>
     </div>
-
     <div class="form-group">
         <label asp-for="ImageFile"></label>
         <input asp-for="ImageFile" type="file" class="form-control" />
@@ -30,10 +35,10 @@
     </div>
     <div class="form-group">
         <label asp-for="MovieDescription"></label>
-        <input asp-for="MovieDescription" class="form-control" />
+        <textarea asp-for="MovieDescription" class="form-control"></textarea>
         <span asp-validation-for="MovieDescription" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Save changes</button>
+    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Save changes</button>
 </form>
 
 <a asp-action="Index">Back to List</a>

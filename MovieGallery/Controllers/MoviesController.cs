@@ -35,6 +35,18 @@ namespace MovieGallery.Controllers
             return View(viewModel);
         }
 
+        public IActionResult Search(string title)
+        {
+            List<Movie> searchResults = _movieMethods.SearchMoviesByTitle(title, out string errorMessage);
+
+            var searchResultsDTO = searchResults.Select(movie => new MovieSearchResult
+            {
+                MovieID = movie.MovieID,
+                Title = movie.Title,
+            }).ToList();
+            return Json(searchResultsDTO);
+        }
+
         //GET
         public IActionResult Create()
         {
@@ -43,6 +55,7 @@ namespace MovieGallery.Controllers
         //GET
         public IActionResult Details(int id)
         {
+          
             MovieMethods movieMethods = new MovieMethods();
             string errormsg;
             Movie movie = movieMethods.GetMovieById(id, out errormsg);
@@ -70,7 +83,7 @@ namespace MovieGallery.Controllers
             {
                 return NotFound();
             }
-
+            var viewModel = new MoviesViewModel();
             if (!string.IsNullOrEmpty(errormsg))
             {
                 ViewBag.ErrorMessage = errormsg;

@@ -19,9 +19,9 @@ namespace MovieGallery.Models
         [DisplayName("Description")]
         public string MovieDescription { get; set; }
         [NotMapped]
-        [DisplayName("Movie Cover File")]
+        [DisplayName("Image")]
         public IFormFile ImageFile { get; set; }
-        public List<MovieProducer> Producers { get; set; }
+        public List<MovieProducer> ?Producers { get; set; }
         public double AverageRating { get; set; }
         public int NumberOfRatings { get; set; }
     }

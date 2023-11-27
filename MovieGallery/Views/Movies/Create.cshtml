@@ -25,11 +25,6 @@
         <span asp-validation-for="Genre" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="MovieDescription"></label>
-        <input asp-for="MovieDescription" class="form-control" />
-        <span asp-validation-for="MovieDescription" class="text-danger"></span>
-    </div>
-    <div class="form-group">
         <label asp-for="ReleaseDate"></label>
         <input asp-for="ReleaseDate" class="form-control" type="date" asp-format="{0:yyyy-MM-dd}" />
         <span asp-validation-for="ReleaseDate" class="text-danger"></span>
@@ -39,7 +34,11 @@
         <input asp-for="ImageFile" type="file" class="form-control" />
         <span asp-validation-for="ImageFile" class="text-danger"></span>
     </div>
-
+    <div class="form-group">
+        <label asp-for="MovieDescription"></label>
+        <textarea asp-for="MovieDescription" class="form-control"></textarea>
+        <span asp-validation-for="MovieDescription" class="text-danger"></span>
+    </div>
     <!-- Producer Details -->
     <h3>Producers</h3>
     <div id="producersContainer">
@@ -53,9 +52,9 @@
             <span asp-validation-for="Producers[0].Producer.LastName" class="text-danger"></span>
         </div>
     </div>
-    <button type="button" class="btn btn-primary" id="addProducerBtn">Add Producer</button>
+    <button type="button" class="btn btn-primary" id="addProducerBtn" style="margin-top: 20px;">Add Producer</button>
 
-    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Save</button>
 </form>
 
 @if (!ViewData.ModelState.IsValid)

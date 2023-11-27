@@ -1,9 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MovieGallery.Models
 {
@@ -79,6 +75,64 @@ namespace MovieGallery.Models
             }
 
             return movies;
+        }
+        public List<Movie> SearchMoviesByTitle(string title, out string errormsg)
+        {
+            List<Movie> results = new List<Movie>();
+
+            // Create SQL Connection
+            SqlConnection conn = new SqlConnection();
+
+            // Connection to SQL Server
+            conn.ConnectionString = connectionString;
+
+            // Use the stored procedure to retrieve movies filtered by title
+            SqlCommand sqlCommand = new SqlCommand("SearchMoviesByTitle", conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            sqlCommand.Parameters.Add("@title", SqlDbType.NVarChar).Value = title;
+
+            try
+            {
+                conn.Open();
+
+                // Execute the stored procedure
+                SqlDataReader reader = sqlCommand.ExecuteReader();
+
+                // Check if there are any rows returned
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        // Create a Movie object for each row and add it to the list
+                        Movie movie = new Movie
+                        {
+                            MovieID = Convert.ToInt32(reader["MovieID"]),
+                            Title = reader["Title"].ToString(),
+                            Genre = reader["Genre"].ToString(),
+                            MovieImage = reader["MovieImage"].ToString(),
+                            ReleaseDate = Convert.ToDateTime(reader["ReleaseDate"]),
+                            MovieDescription = reader["MovieDescription"].ToString()
+                        };
+
+                        results.Add(movie);
+                    }
+                }
+
+                errormsg = "";
+            }
+            catch (Exception ex)
+            {
+                errormsg = ex.Message;
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return results;
         }
         public List<Movie> GetMoviesByGenre(string genre, out string errormsg)
         {
@@ -228,7 +282,7 @@ namespace MovieGallery.Models
                     SqlCommand dbCommand = new SqlCommand(sqlstring, dbConnection, transaction);
                     dbCommand.Parameters.Add(new SqlParameter("@title", SqlDbType.VarChar, 50) { Value = movie.Title });
                     dbCommand.Parameters.Add(new SqlParameter("@genre", SqlDbType.VarChar, 50) { Value = movie.Genre });
-                    dbCommand.Parameters.Add(new SqlParameter("@image_url", SqlDbType.VarChar, 50) { Value = movie.MovieImage });
+                    dbCommand.Parameters.Add(new SqlParameter("@image_url", SqlDbType.NVarChar, 1000) { Value = movie.MovieImage });
                     dbCommand.Parameters.Add(new SqlParameter("@release_date", SqlDbType.Date) { Value = movie.ReleaseDate });
                     dbCommand.Parameters.Add(new SqlParameter("@movie_description", SqlDbType.VarChar) { Value = movie.MovieDescription });
 
@@ -280,7 +334,7 @@ namespace MovieGallery.Models
             dbCommand.Parameters.Add("movieId", System.Data.SqlDbType.Int).Value = movie.MovieID;
             dbCommand.Parameters.Add("title", System.Data.SqlDbType.VarChar, 50).Value = movie.Title;
             dbCommand.Parameters.Add("genre", System.Data.SqlDbType.VarChar, 50).Value = movie.Genre;
-            dbCommand.Parameters.Add("image_url", System.Data.SqlDbType.VarChar, 50).Value = movie.MovieImage;
+            dbCommand.Parameters.Add("image_url", System.Data.SqlDbType.NVarChar, 1000).Value = movie.MovieImage;
             dbCommand.Parameters.Add("release_date", System.Data.SqlDbType.Date).Value = movie.ReleaseDate;
             dbCommand.Parameters.Add("movie_description", System.Data.SqlDbType.VarChar).Value = movie.MovieDescription;
 

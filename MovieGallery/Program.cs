@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Connections;
 using Microsoft.EntityFrameworkCore;
+using MovieGallery.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();

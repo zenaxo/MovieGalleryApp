@@ -26,6 +26,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Movies" asp-action="Create">Add Movie</a>
                         </li>
+                        <li class="search-container">
+                            <form class="form-inline my-2 my-lg-0" action="javascript:void(0);" id="searchForm">
+                                <input class="form-control mr-sm-2" type="search" placeholder="Search Movies" aria-label="Search" name="title" id="searchInput">
+                                <div id="searchResultsContainer"></div>
+                            </form>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -45,6 +51,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/handleSearchInput.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
