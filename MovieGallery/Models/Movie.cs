@@ -19,6 +19,8 @@ namespace MovieGallery.Models
         [NotMapped]
         [DisplayName("Movie Cover File")]
         public IFormFile ImageFile { get; set; }
+
+        public List<Producer> Producers { get; set; }
     }
 
 }

@@ -18,24 +18,6 @@ namespace MovieGallery.Controllers
             string errormsg;
 
             // Check if the flag is present in TempData
-            if(TempData.ContainsKey("FilterGenres"))
-            {
-                // Filter logic here
-                string genre = ViewBag.genre;
-                List<Movie> filteredMovieList = movieMethods.GetMoviesFilteredByGenre(genre, out errormsg);
-
-                if(!string.IsNullOrEmpty(errormsg))
-                {
-                    ViewBag.ErrorMessage = errormsg;
-                }
-
-                // Clear the flag from TempData
-                TempData.Remove("FilterGenres");
-
-                return View(new MoviesViewModel { Movies = filteredMovieList, RatingMethods = new RatingMethods() });
-            }
-
-            // Check if the flag is present in TempData
             if (TempData.ContainsKey("SortByRating"))
             {
                 // Sorting logic here
@@ -62,24 +44,6 @@ namespace MovieGallery.Controllers
             }
 
             return View(new MoviesViewModel { Movies = objMovieList, RatingMethods = new RatingMethods() });
-        }
-
-        public IActionResult FilterGenres(string genre)
-        {
-            ViewBag.genre = genre;
-            MovieMethods movieMethods = new MovieMethods();
-            string errormsg;
-            List<Movie> filteredMovieList = movieMethods.GetMoviesFilteredByGenre(genre, out errormsg);
-
-            if (!string.IsNullOrEmpty(errormsg))
-            {
-                ViewBag.Error = errormsg;
-            }
-
-            TempData["FilterGenres"] = true;
-
-            return RedirectToAction("Index");
-
         }
 
         public IActionResult SortByRating()

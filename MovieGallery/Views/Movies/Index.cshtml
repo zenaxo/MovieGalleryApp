@@ -3,21 +3,6 @@
 <button type="button" class="sort-button" onclick="location.href='@Url.Action("SortByRating", "Movies")'">
     Sort By Rating
 </button>
-<select id="genreDropdown" name="genre" onchange="filterByGenre()">
-    <option value="Test">Select Genre</option>
-    <option value="Drama">Drama</option>
-</select>
-<script>
-    function filterByGenre() {
-        var selectedGenre = document.getElementById("genreDropdown").value;
-        console.log(selectedGenre);
-        if (selectedGenre !== "") {
-            var url = '@Url.Action("FilterGenres", "Movies")' + '?genre=' + selectedGenre;
-            window.location.href = url;
-        }
-    }
-</script>
-<p>@ViewBag.genre</p>
 <div class="movies-disp">
     @foreach (var movie in Model.Movies)
     {
