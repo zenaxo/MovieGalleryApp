@@ -259,10 +259,10 @@ namespace MovieGallery.Models
                     }
                 }
 
-                foreach(Producer producer in producers)
-                {
-                    movie.Producers.Add(producer);
-                }
+                //foreach(Producer producer in producers)
+                //{
+                //    movie.Producers.Add(producer);
+                //}
 
                 errormsg = "";
             }
