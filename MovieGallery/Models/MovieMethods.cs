@@ -102,6 +102,40 @@ namespace MovieGallery.Models
                     };
                 }
 
+                // Get Movie Producers
+                List<Producer> producers = new List<Producer>();
+                using (SqlCommand sqlCommand = new SqlCommand("GetProducersForMovie", dbConnection))
+                {
+                    sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                    sqlCommand.Parameters.Add("@MovieID", System.Data.SqlDbType.Int).Value = movieId;
+
+                    // Execute the command
+                    using (SqlDataReader producerReader = sqlCommand.ExecuteReader())
+                    {
+                        if (producerReader.HasRows)
+                        {
+                            // Read the data from the SqlDataReader
+                            while (producerReader.Read())
+                            {
+                                string firstName = producerReader["FirstName"].ToString();
+                                string lastName = producerReader["LastName"].ToString();
+
+                                // Create a Producer and add it to the list
+                                producers.Add(new Producer
+                                {
+                                    FirstName = firstName,
+                                    LastName = lastName
+                                });
+                            }
+                        }
+                    }
+                }
+
+                foreach(Producer producer in producers)
+                {
+                    movie.Producers.Add(producer);
+                }
+
                 errormsg = "";
             }
             catch (Exception e)
