@@ -8,6 +8,6 @@
         public Producer Producer { get; set; }
 
         public int MovieID { get; set; }
-        public Movie Movie { get; set; }
+        public Movie? Movie { get; set; }
     }
 }

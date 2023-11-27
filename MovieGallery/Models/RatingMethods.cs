@@ -83,6 +83,35 @@ namespace MovieGallery.Models
 
             return numberOfRatings;
         }
+        public List<Movie> GetMovieListSortedByAverageRating(List<Movie> movieList, out string errormsg)
+        {
+            List<Movie> sortedMovies = new List<Movie>();
+
+            foreach (var movie in movieList)
+            {
+                // Calculate average rating for each movie
+                double averageRating = GetAverageRating(movie.MovieID, out errormsg);
+                double numberOfRatings = GetNumberOfRatings(movie.MovieID, out errormsg);
+
+                if (!string.IsNullOrEmpty(errormsg))
+                {
+                    // Handle error, log, or return an appropriate response
+                    return null;
+                }
+
+                // Assign the average rating to the movie
+                movie.AverageRating = averageRating;
+                movie.NumberOfRatings = ((int)numberOfRatings);
+
+                sortedMovies.Add(movie);
+            }
+
+            // Sort the movies by average rating in descending order
+            sortedMovies = sortedMovies.OrderByDescending(m => m.AverageRating).ToList();
+
+            errormsg = "";
+            return sortedMovies;
+        }
         public List<Movie> GetMoviesSortedByAverageRating(out string errormsg)
         {
             List<Movie> movies = new List<Movie>();

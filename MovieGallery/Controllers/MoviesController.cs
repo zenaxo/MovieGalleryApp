@@ -7,61 +7,32 @@ namespace MovieGallery.Controllers
     public class MoviesController : Controller
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly MovieMethods _movieMethods;
 
         public MoviesController(IWebHostEnvironment webHostEnvironment)
         {
             _webHostEnvironment = webHostEnvironment;
+            _movieMethods = new MovieMethods();
         }
-        public IActionResult Index()
+        public IActionResult Index(string filterOption, bool isSortedByAverageRating)
         {
-            MovieMethods movieMethods = new MovieMethods();
-            string errormsg;
+            string errorMessage;
+            var movies = _movieMethods.GetMovieList(out errorMessage, filterOption, isSortedByAverageRating);
 
-            // Check if the flag is present in TempData
-            if (TempData.ContainsKey("SortByRating"))
+            if (!string.IsNullOrEmpty(errorMessage))
             {
-                // Sorting logic here
-                RatingMethods ratingMethods = new RatingMethods();
-                List<Movie> sortedMovieList = ratingMethods.GetMoviesSortedByAverageRating(out errormsg);
-
-                if (!string.IsNullOrEmpty(errormsg))
-                {
-                    ViewBag.ErrorMessage = errormsg;
-                }
-
-                // Clear the flag from TempData
-                TempData.Remove("SortByRating");
-
-                return View(new MoviesViewModel { Movies = sortedMovieList, RatingMethods = new RatingMethods() });
+                // Handle the error, e.g., log it or display an error message
+                ViewBag.ErrorMessage = errorMessage;
             }
 
-            // Default logic without sorting
-            List<Movie> objMovieList = movieMethods.GetAllMovies(out errormsg);
-
-            if (!string.IsNullOrEmpty(errormsg))
+            var viewModel = new MoviesViewModel
             {
-                ViewBag.ErrorMessage = errormsg;
-            }
+                Movies = movies,
+                FilterOption = filterOption,
+                IsSortedByAverageRating = isSortedByAverageRating
+            };
 
-            return View(new MoviesViewModel { Movies = objMovieList, RatingMethods = new RatingMethods() });
-        }
-        public IActionResult SortByRating()
-        {
-            RatingMethods ratingMethods = new RatingMethods();
-            string errormsg;
-
-            List<Movie> sortedMovieList = ratingMethods.GetMoviesSortedByAverageRating(out errormsg);
-
-            if (!string.IsNullOrEmpty(errormsg))
-            {
-                ViewBag.Error = errormsg;
-            }
-
-            // Set a flag in TempData to indicate sorting by rating
-            TempData["SortByRating"] = true;
-
-            // Return the Index view with the sorted movie list
-            return RedirectToAction("Index", new MoviesViewModel { Movies = sortedMovieList, RatingMethods = ratingMethods });
+            return View(viewModel);
         }
 
         //GET
@@ -87,6 +58,47 @@ namespace MovieGallery.Controllers
             }
 
             return View(movie);
+        }
+
+        public IActionResult Delete(int id)
+        {
+            MovieMethods movieMethods = new MovieMethods();
+            string errormsg;
+            Movie movie = movieMethods.GetMovieById(id, out errormsg);
+
+            if (movie == null)
+            {
+                return NotFound();
+            }
+
+            if (!string.IsNullOrEmpty(errormsg))
+            {
+                ViewBag.ErrorMessage = errormsg;
+            }
+
+            return View(movie);
+        }
+        public IActionResult ConfirmDelete(int id)
+        {
+            MovieMethods movieMethods = new MovieMethods();
+            string errormsg;
+
+            // Retrieve the movie using the ID passed in the form
+            Movie movie = movieMethods.GetMovieById(id, out errormsg);
+
+            if (movie == null)
+            {
+                return NotFound();
+            }
+
+            movieMethods.DeleteMovie(id, out errormsg);
+
+            if (!string.IsNullOrEmpty(errormsg))
+            {
+                ViewBag.ErrorMessage = errormsg;
+            }
+
+            return RedirectToAction("Index");
         }
         public IActionResult Edit(int id)
         {
@@ -157,49 +169,68 @@ namespace MovieGallery.Controllers
         //POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Movie obj)
+        public IActionResult Create(Movie obj, List<Producer> producers)
         {
-            if (ModelState.IsValid)
+            try
             {
-                // Check if an image file is uploaded
-                if (obj.ImageFile != null && obj.ImageFile.Length > 0)
+                if (ModelState.IsValid)
                 {
-                    // Generate a unique filename for the image
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + obj.ImageFile.FileName;
-
-                    // Set the path for saving the image in the wwwroot/images folder
-                    string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", uniqueFileName);
-
-                    // Save the image to the specified path
-                    using (var fileStream = new FileStream(imagePath, FileMode.Create))
+                    // Check if an image file is uploaded
+                    if (obj.ImageFile != null && obj.ImageFile.Length > 0)
                     {
-                        obj.ImageFile.CopyTo(fileStream);
+                        // Generate a unique filename for the image
+                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + obj.ImageFile.FileName;
+
+                        // Set the path for saving the image in the wwwroot/images folder
+                        string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", uniqueFileName);
+
+                        // Save the image to the specified path
+                        using (var fileStream = new FileStream(imagePath, FileMode.Create))
+                        {
+                            obj.ImageFile.CopyTo(fileStream);
+                        }
+
+                        // Set the MovieImage property to the unique filename
+                        obj.MovieImage = uniqueFileName;
                     }
 
-                    // Set the MovieImage property to the unique filename
-                    obj.MovieImage = uniqueFileName;
+                    string error = "";
+                    MovieMethods movieMethods = new MovieMethods();
+                    int i = movieMethods.InsertMovie(obj, producers, out error);
+                    ViewBag.Error = error;
+
+                    if (i > 0)
+                    {
+                        // Movie successfully inserted, redirect to Index
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        // Handle the case where movie insertion failed
+                        ModelState.AddModelError("", $"Failed to insert movie: {error}");
+                    }
                 }
-                MovieMethods movieMethods = new MovieMethods();
 
-                int i = 0;
-                string error = "";
-
-                i = movieMethods.InsertMovie(obj, out error);
-
-                if (i > 0)
+                // If ModelState is not valid, print out validation errors
+                foreach (var key in ModelState.Keys)
                 {
-                    // Movie successfully inserted, redirect to Index
-                    return RedirectToAction("Index");
+                    foreach (var error in ModelState[key].Errors)
+                    {
+                        Console.WriteLine($"Field: {key}, Error: {error.ErrorMessage}");
+                    }
                 }
-                else
-                {
-                    // Handle the case where movie insertion failed
-                    ModelState.AddModelError("", $"Failed to insert movie: {error}");
-                }
+
+                // Return to the same view with validation errors
+                return View(obj);
             }
-
-            // If ModelState is not valid, return to the same view with validation errors
-            return View(obj);
+            catch (Exception ex)
+            {
+                // Log the exception for further analysis
+                Console.WriteLine($"Exception: {ex.Message}");
+                ModelState.AddModelError("", "An error occurred while processing your request. Please try again.");
+                return View(obj);
+            }
         }
+
     }
 }

@@ -1,7 +1,23 @@
-﻿.movies-disp {
+﻿.filter-options {
+    gap: 40px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 50px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+.filter-options > * {
+    margin-block: 10px;
+}
+.genre-filter {
+    position: relative;
+}
+.movies-disp {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 100px
+}
+.header {
+    margin-bottom: 40px;
 }
 .movie-container img {
     cursor: pointer;
