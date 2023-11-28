@@ -16,6 +16,19 @@
     </div>
     <button type="button" class="btn btn-primary filter-button" onclick="applyGenreFilter()">Apply</button>
 </form>
+@if (!string.IsNullOrEmpty(ViewBag.RatingError))
+{
+    <div class="alert alert-danger">
+        @ViewBag.RatingError
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.Error))
+{
+    <div class="alert alert-danger">
+        @ViewBag.Error
+    </div>
+}
 <div class="header">
     <h2>@Model.FilterOption movies</h2>
 </div>

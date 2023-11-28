@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace MovieGallery.Models
 {
@@ -8,77 +9,150 @@ namespace MovieGallery.Models
     {
         string connectionString = "Data Source = (localdb)\\MSSQLLocalDB;Initial Catalog = MovieGallery; Integrated Security = True; Connect Timeout = 30; Encrypt=False;Trust Server Certificate=False;Application Intent = ReadWrite; Multi Subnet Failover=False";
 
-        public double GetAverageRating(int movieId, out string errormsg)
+        public void GenerateRatings(int movieId, int numRatings, string ratingValue, out string errormsg)
+        {
+            errormsg = "";
+
+            if (ratingValue == "Random")
+            {
+                Random rnd = new Random();
+
+                for (int i = 0; i < numRatings; i++)
+                {
+                    int rating = rnd.Next(1, 6);
+                    string result = AddRating(movieId, rating);
+
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        // Handle the error (log, return, etc.)
+                        errormsg += result + Environment.NewLine;
+
+                        break;
+                    }
+                }
+            } 
+            else
+            {
+                if (int.TryParse(ratingValue, out int rating))
+                {
+                    for (int i = 0; i < numRatings; i++)
+                    {
+                        string result = AddRating(movieId, rating);
+
+                        if (!string.IsNullOrEmpty(result))
+                        {
+                            // Handle the error (log, return, etc.)
+                            errormsg += result + Environment.NewLine;
+
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    errormsg = "Invalid ratingValue. Please provide a valid integer.";
+                }
+            }
+        }
+        private string AddRating(int movieId, int rating)
+        {
+            string errorMessage = "";
+
+            using (SqlConnection dbConnection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand dbCommand = new SqlCommand("AddRating", dbConnection))
+                {
+                    dbCommand.CommandType = CommandType.StoredProcedure;
+
+                    // Add parameters
+                    dbCommand.Parameters.Add("@movieId", SqlDbType.Int).Value = movieId;
+                    dbCommand.Parameters.Add("@rating", SqlDbType.Int).Value = rating;
+
+                    try
+                    {
+                        dbConnection.Open();
+
+                        // Execute the stored procedure to insert the rating
+                        dbCommand.ExecuteNonQuery();
+
+                        errorMessage = "";
+                    }
+                    catch (Exception e)
+                    {
+                        errorMessage = e.Message;
+                    }
+                }
+            }
+
+            return errorMessage;
+        }
+        public double GetAverageRating(int movieId, out string errorMessage)
         {
             double averageRating = 0;
+            errorMessage = "";
 
-            // Create SQL Connection
-            SqlConnection dbConnection = new SqlConnection();
-
-            // Connection to SQL Server
-            dbConnection.ConnectionString = connectionString;
-
-            // SQL query to calculate the average rating for a movie
-            string sqlQuery = "SELECT AVG(Rating) AS AverageRating FROM Ratings WHERE MovieID = @movieId";
-            SqlCommand dbCommand = new SqlCommand(sqlQuery, dbConnection);
-            dbCommand.Parameters.Add("movieId", System.Data.SqlDbType.Int).Value = movieId;
-
-            try
+            using (SqlConnection dbConnection = new SqlConnection(connectionString))
             {
-                dbConnection.Open();
-
-                // Execute the SQL query
-                var result = dbCommand.ExecuteScalar();
-                if (result != DBNull.Value)
+                using (SqlCommand dbCommand = new SqlCommand("GetAverageRating", dbConnection))
                 {
-                    averageRating = Convert.ToDouble(result);
-                }
+                    dbCommand.CommandType = CommandType.StoredProcedure;
 
-                errormsg = "";
-            }
-            catch (Exception e)
-            {
-                errormsg = e.Message;
-            }
-            finally
-            {
-                dbConnection.Close();
+                    // Add parameters
+                    dbCommand.Parameters.Add("@movieId", SqlDbType.Int).Value = movieId;
+                    dbCommand.Parameters.Add("@averageRating", SqlDbType.Float).Direction = ParameterDirection.Output;
+
+                    try
+                    {
+                        dbConnection.Open();
+                        dbCommand.ExecuteNonQuery();
+
+                        // Retrieve the output parameter value
+                        if (dbCommand.Parameters["@averageRating"].Value != DBNull.Value)
+                        {
+                            averageRating = Convert.ToDouble(dbCommand.Parameters["@averageRating"].Value);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        errorMessage = e.Message;
+                    }
+                }
             }
 
             return averageRating;
         }
 
-        public int GetNumberOfRatings(int movieId, out string errormsg)
+        public int GetNumberOfRatings(int movieId, out string errorMessage)
         {
             int numberOfRatings = 0;
+            errorMessage = "";
 
-            // Create SQL Connection
-            SqlConnection dbConnection = new SqlConnection();
-
-            // Connection to SQL Server
-            dbConnection.ConnectionString = connectionString;
-
-            // SQL query to count the number of ratings for a movie
-            string sqlQuery = "SELECT COUNT(*) FROM Ratings WHERE MovieID = @movieId";
-            SqlCommand dbCommand = new SqlCommand(sqlQuery, dbConnection);
-            dbCommand.Parameters.Add("movieId", System.Data.SqlDbType.Int).Value = movieId;
-
-            try
+            using (SqlConnection dbConnection = new SqlConnection(connectionString))
             {
-                dbConnection.Open();
+                using (SqlCommand dbCommand = new SqlCommand("GetNumberOfRatings", dbConnection))
+                {
+                    dbCommand.CommandType = CommandType.StoredProcedure;
 
-                // Execute the SQL query
-                numberOfRatings = (int)dbCommand.ExecuteScalar();
+                    // Add parameters
+                    dbCommand.Parameters.Add("@movieId", SqlDbType.Int).Value = movieId;
+                    dbCommand.Parameters.Add("@numberOfRatings", SqlDbType.Int).Direction = ParameterDirection.Output;
 
-                errormsg = "";
-            }
-            catch (Exception e)
-            {
-                errormsg = e.Message;
-            }
-            finally
-            {
-                dbConnection.Close();
+                    try
+                    {
+                        dbConnection.Open();
+                        dbCommand.ExecuteNonQuery();
+
+                        // Retrieve the output parameter value
+                        if (dbCommand.Parameters["@numberOfRatings"].Value != DBNull.Value)
+                        {
+                            numberOfRatings = Convert.ToInt32(dbCommand.Parameters["@numberOfRatings"].Value);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        errorMessage = e.Message;
+                    }
+                }
             }
 
             return numberOfRatings;
@@ -111,62 +185,6 @@ namespace MovieGallery.Models
 
             errormsg = "";
             return sortedMovies;
-        }
-        public List<Movie> GetMoviesSortedByAverageRating(out string errormsg)
-        {
-            List<Movie> movies = new List<Movie>();
-
-            // Create SQL Connection
-            SqlConnection dbConnection = new SqlConnection();
-
-            // Connection to SQL Server
-            dbConnection.ConnectionString = connectionString;
-
-            // Use a stored procedure to retrieve movies sorted by average rating
-            string storedProcedureName = "GetMoviesSortedByAverageRating";
-            SqlCommand dbCommand = new SqlCommand(storedProcedureName, dbConnection)
-            {
-                CommandType = System.Data.CommandType.StoredProcedure
-            };
-
-            try
-            {
-                dbConnection.Open();
-
-                // Execute the stored procedure
-                SqlDataReader reader = dbCommand.ExecuteReader();
-
-                // Check if there are any rows returned
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        // Create a Movie object for each row and add it to the list
-                        Movie movie = new Movie
-                        {
-                            MovieID = Convert.ToInt32(reader["MovieID"]),
-                            Title = reader["Title"].ToString(),
-                            Genre = reader["Genre"].ToString(),
-                            MovieImage = reader["MovieImage"].ToString(),
-                            ReleaseDate = Convert.ToDateTime(reader["ReleaseDate"])
-                        };
-
-                        movies.Add(movie);
-                    }
-                }
-
-                errormsg = "";
-            }
-            catch (Exception e)
-            {
-                errormsg = e.Message;
-            }
-            finally
-            {
-                dbConnection.Close();
-            }
-
-            return movies;
         }
     }
 }

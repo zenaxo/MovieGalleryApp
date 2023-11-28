@@ -1,12 +1,11 @@
 ﻿@model MovieGallery.Models.Movie
 
-<h2>Edit Movie</h2>
+<h2 style="margin-top:20px;">Edit Movie</h2>
 
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
     <div asp-validation-summary="All" class="text-danger"></div>
-
     <input type="hidden" asp-for="MovieID" />
-
+    <h3 style="margin-top:20px;">Movie Details</h3>
     <div class="form-group">
         <label asp-for="Title"></label>
         <input asp-for="Title" class="form-control" />
@@ -37,6 +36,20 @@
         <label asp-for="MovieDescription"></label>
         <textarea asp-for="MovieDescription" class="form-control"></textarea>
         <span asp-validation-for="MovieDescription" class="text-danger"></span>
+    </div>
+    <h3 style="margin-top:20px;">Add ratings (Demo purpose)</h3>
+    <div class="form-group">
+        <label for="numRatings">Number of Ratings</label>
+        <input type="number" step="1" min="1" name="numRatings" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="ratingValue">Rating Value</label>
+        <select name="ratingValue" class="form-control">
+            @foreach (var option in GlobalVariables.RatingValues)
+            {
+                <option value="@option">@option</option>
+            }
+        </select>
     </div>
     <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Save changes</button>
 </form>

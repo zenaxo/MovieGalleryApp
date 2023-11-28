@@ -4,10 +4,10 @@
     ViewData["Title"] = "Create";
 }
 
-<h2>Create Movie</h2>
+<h2 style="margin-top:20px;">Create Movie</h2>
 
 <form asp-action="Create" enctype="multipart/form-data">
-    <!-- Movie Details -->
+    <h3 style="margin-top:20px;">Movie details</h3>
     <div class="form-group">
         <label asp-for="Title"></label>
         <input asp-for="Title" class="form-control" />
@@ -39,8 +39,21 @@
         <textarea asp-for="MovieDescription" class="form-control"></textarea>
         <span asp-validation-for="MovieDescription" class="text-danger"></span>
     </div>
-    <!-- Producer Details -->
-    <h3>Producers</h3>
+    <h3 style="margin-top:20px;">Add ratings (Demo purpose)</h3>
+    <div class="form-group">
+        <label for="numRatings">Number of Ratings</label>
+        <input type="number" step="1" min="1" name="numRatings" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="ratingValue">Rating Value</label>
+        <select name="ratingValue" class="form-control">
+            @foreach (var option in GlobalVariables.RatingValues)
+            {
+                <option value="@option">@option</option>
+            }
+        </select>
+    </div>
+    <h3 style="margin-top:20px;">Producers (Under construction)</h3>
     <div id="producersContainer">
         <div class="producer-form-group">
             <label for="producers[0].FirstName">First Name</label>
