@@ -4,7 +4,6 @@ public static class GlobalVariables
 {
     public static List<string> Genres { get; } = new List<string>();
     public static List<string> RatingValues { get; } = new List<string>();
-
     static GlobalVariables() {
 
         Genres.Add("Action");
@@ -18,5 +17,6 @@ public static class GlobalVariables
         RatingValues.Add("3");
         RatingValues.Add("4");
         RatingValues.Add("5");
+
     }
 }

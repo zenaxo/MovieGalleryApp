@@ -41,8 +41,9 @@
                 <img src='~/images/@(movie.MovieImage)' class="movie-image" data-movie-id="@movie.MovieID" />
                 <div class="title-container">
                     <h2>@movie.Title</h2>
+                    <p>@movie.ReleaseDate.ToString("yyyy")</p>
                 </div>
-                <div class="genre-rating">
+                <div class="actions">
                     <button type="button" class="genre-button" onclick="filterGenre('@movie.Genre')">
                         <p>@movie.Genre</p>
                     </button>
@@ -61,15 +62,14 @@
                     </div>
                     <a asp-action="Edit" asp-route-id="@movie.MovieID" class="edit-movie">
                         <p>Edit</p>
-                        <i class="fa-solid fa-pen-to-square" style="color: #373c5a;"></i>
+                        <i class="fa-solid fa-pen-to-square" style="color: var(--bg-box);"></i>
                     </a>
                     <a asp-action="Delete" asp-route-id="@movie.MovieID" class="edit-movie">
                         <p>Delete</p>
-                        <i class="fa-solid fa-trash" style="color: #373c5a;"></i>
+                        <i class="fa-solid fa-trash" style="color: var(--bg-box);"></i>
                     </a>
                 </div>
-                <p>@movie.ReleaseDate.ToString("yyyy")</p>
-                <div class="producers-container">
+                @* <div class="producers-container">
                     <h3>Producers:</h3>
                     @if (movie.Producers != null)
                     {
@@ -89,7 +89,7 @@
                     {
                         <p>No information available</p>
                     }
-                </div>
+                </div> *@
             </div>
         }
     }

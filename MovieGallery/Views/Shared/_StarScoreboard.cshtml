@@ -1,0 +1,44 @@
+﻿@model Movie
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div class="star-scoreboard">
+    <div class="stars-average">
+        <h2>@Model.AverageRating.ToString("0.0")</h2>
+        <div>
+            @for (int i = 1; i <= 5; i++)
+            {
+                string starClass = i <= Model.AverageRating ? "filled-star" : "empty-star";
+                <i class="fa-solid fa-star @starClass"></i>
+            }
+        </div>
+        <p>(@Model.NumberOfRatings)</p>
+    </div>
+    <div class="scoreboard">
+        <div class="stars">
+            @foreach(var star in Model.Stars)
+            {
+                <section class="star" id="@star.rating">
+                    <p>@star.rating</p>
+                    <i class="fa-solid fa-star" style="color: #ffd500;"></i>
+                </section>
+            }
+        </div>
+        <div class="bars">
+            @{var max = Model.Stars.Max(t => t.total);}
+            @foreach (var star in Model.Stars)
+            {
+                <section class="bar">
+                    <div class="meeter">
+                        <div class="fill-level" style="width: calc((@star.total / @max) * 100%)"></div>
+                    </div>
+                    <p>@star.total</p>
+                </section>
+            }
+        </div>
+    </div>  
+</div>
+

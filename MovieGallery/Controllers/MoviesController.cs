@@ -205,6 +205,7 @@ namespace MovieGallery.Controllers
         {
             if (ModelState.IsValid)
             {
+                string error = "";
                 // Check if an image file is uploaded
                 if (obj.ImageFile != null && obj.ImageFile.Length > 0)
                 {
@@ -214,7 +215,7 @@ namespace MovieGallery.Controllers
                     // Set the path for saving the image in the wwwroot/images folder
                     string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", uniqueFileName);
 
-                    // Save the image to the specified path
+                    // Save the new image to the specified path
                     using (var fileStream = new FileStream(imagePath, FileMode.Create))
                     {
                         obj.ImageFile.CopyTo(fileStream);
@@ -223,9 +224,14 @@ namespace MovieGallery.Controllers
                     // Set the MovieImage property to the unique filename
                     obj.MovieImage = uniqueFileName;
                 }
+                else
+                {
+                    // No new image uploaded, retain the existing image path
+                    Movie existingMovie = _movieMethods.GetMovieById(obj.MovieID, out error); // Replace with your own method to get the existing movie details
+                    obj.MovieImage = existingMovie.MovieImage;
+                }
 
                 int i = 0;
-                string error = "";
 
                 i = _movieMethods.UpdateMovie(obj, numRatings, ratingValue, out error);
                 if (!string.IsNullOrEmpty(error))

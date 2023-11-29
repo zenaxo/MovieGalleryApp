@@ -14,28 +14,43 @@
 .movies-disp {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 100px
+    gap: 100px;
+    color: #ffff;
 }
 .header {
     margin-bottom: 40px;
+    color: #ffff;
+    background: var(--bg-box);
+    border-radius: 10px;
+}
+.header > *{
+    padding-block: 20px;
+    margin-left: 15px;
 }
 .movie-container img {
+    border-radius: inherit;
     cursor: pointer;
     width: 100%;
     height: 450px;
     object-fit: cover;
     margin-bottom: 20px;
 }
+.movie-container img:hover {
+    border: 2px solid rgb(255, 255, 255);
+}
 .movie-container {
+    border-radius: 10px;
     outline: 1px solid rgba(0,0,0, 0.1);
+    background: var(--bg-box);
+    -webkit-box-shadow: -2px 5px 17px -3px #000000;
+    box-shadow: -2px 5px 17px -3px #000000;
+    box-shadow: 2px -1px 43px -15px rgba(12,11,64,0.76) inset;
 }
-.movie-container > :not(:first-child) {
-    margin-left: 20px;
-}
-.genre-rating {
+.actions {
     display: flex;
+    justify-content: space-around;
+    margin-inline: 10px;
     align-items: center;
-    gap: 20px;
     margin-bottom: 15px;
 }
 .avg-rating {
@@ -56,35 +71,34 @@
 .genre-button {
     outline: none;
     border: none;
-    height: 35px;
+    height: 40px;
     cursor: pointer;
     border-radius: 10px;
-    background: #556090;
-    color: #ffff;
+    background: var(--bg-primary);
 }
 .genre-button:hover {
-    background: #556090;
-    background: #457acf;
+    background: var(--bg-buttonhover);
 }
 .edit-movie {
-    background: none;
-    padding: 0;
-    border: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    position: relative;
-    gap: 10px;
-    text-decoration: none;
-    color: #000;
+    background: var(--bg-primary);
+    border-radius: 10px;
+    padding-inline: 15px;
+    color: var(--bg-box);
+    height: 40px;
 }
 .edit-movie:hover p {
-    text-decoration: underline;
-    color: #000;
+    color: var(--bg-box);
+}
+.edit-movie:hover {
+    background: var(--bg-buttonhover);
 }
 .title-container {
     height: 130px;
     width: 300px;
+    margin-inline: 15px;
 }
 .movie-container p {
     margin: 0;

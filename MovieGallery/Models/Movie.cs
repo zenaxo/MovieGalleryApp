@@ -20,10 +20,11 @@ namespace MovieGallery.Models
         public string MovieDescription { get; set; }
         [NotMapped]
         [DisplayName("Image")]
-        public IFormFile ImageFile { get; set; }
+        public IFormFile? ImageFile { get; set; }
         public List<MovieProducer> ?Producers { get; set; }
         public double AverageRating { get; set; }
         public int NumberOfRatings { get; set; }
+        public List<Star>? Stars { get; set; }
     }
 
 }

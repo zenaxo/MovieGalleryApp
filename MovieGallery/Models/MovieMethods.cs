@@ -209,7 +209,11 @@ namespace MovieGallery.Models
                                     Genre = reader["Genre"].ToString(),
                                     MovieImage = reader["MovieImage"].ToString(),
                                     ReleaseDate = Convert.ToDateTime(reader["ReleaseDate"]),
-                                    MovieDescription = reader["MovieDescription"].ToString()
+                                    MovieDescription = reader["MovieDescription"].ToString(),
+                                    NumberOfRatings = _ratingMethods.GetNumberOfRatings(movieId, out errorMessage),
+                                    AverageRating = _ratingMethods.GetAverageRating(movieId, out errorMessage),
+                                    Stars = _ratingMethods.GetStars(movieId, out errorMessage)
+
                                 };
                             }
                         }

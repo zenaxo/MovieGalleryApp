@@ -8,6 +8,17 @@ html {
   }
 }
 
+:root {
+    --bg-box: #071330;
+    --bg-primary: #fff;
+    --bg-secondary: #0D255D;
+    --bg-buttonhover: #457acf;
+    --footer-height: 300px;
+}
+a {
+    text-decoration: none;
+    color: white;
+}
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
@@ -16,9 +27,16 @@ html {
   position: relative;
   min-height: 100%;
 }
-
+main {
+    min-height: calc(100vh - var(--footer-height));
+    margin-bottom: 50px;
+}
+footer {
+    height: var(--footer-height);
+}
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background: var(--bg-primary);
 }
 nav {
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);

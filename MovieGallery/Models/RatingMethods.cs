@@ -86,6 +86,53 @@ namespace MovieGallery.Models
 
             return errorMessage;
         }
+        public Star GetStarForMovie(int movieId, int rating, out string errorMessage)
+        {
+            Star star = new Star();
+            errorMessage = "";
+
+            using (SqlConnection dbConnection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand dbCommand = new SqlCommand("GetStarForMovie", dbConnection))
+                {
+                    dbCommand.CommandType = CommandType.StoredProcedure;
+
+                    // Add parameters
+                    dbCommand.Parameters.Add("@movieId", SqlDbType.Int).Value = movieId;
+                    dbCommand.Parameters.Add("@rating", SqlDbType.Int).Value = rating;
+                    dbCommand.Parameters.Add("@total", SqlDbType.Int).Direction = ParameterDirection.Output;
+
+                    try
+                    {
+                        dbConnection.Open();
+                        dbCommand.ExecuteNonQuery();
+
+                        // Retrieve the output parameter values
+                        if (dbCommand.Parameters["@total"].Value != DBNull.Value)
+                        {
+                            star.rating = rating; // Set the provided rating value
+                            star.total = Convert.ToInt32(dbCommand.Parameters["@total"].Value);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        errorMessage = e.Message;
+                    }
+                }
+            }
+
+            return star;
+        }
+        public List<Star> GetStars(int movieId, out string errorMessage)
+        {
+            List<Star> list = new List<Star>();
+            errorMessage = "";
+            for (int i = 5; i >= 1; i--)
+            {
+                list.Add(GetStarForMovie(movieId, i, out errorMessage));
+            }
+            return list;
+        }
         public double GetAverageRating(int movieId, out string errorMessage)
         {
             double averageRating = 0;

@@ -1,8 +1,6 @@
 ﻿@model Movie
 
-<link rel="stylesheet" href="~/css/moviedetail.css" />
-
-<h2>@Model.Title</h2>
+<link rel="stylesheet" href="~/css/moviedetail.css" asp-append-version="true" />
 
 <!-- Display potential errors -->
 @if (TempData["ErrorMessage"] != null)
@@ -13,13 +11,13 @@
 }
 
 <div class="movie-detail">
-    <img src='/images/@(Model.MovieImage)' class="movie-image" />
-    <p>@Model.Genre</p>
-    <p>@Model.ReleaseDate.ToString("yyyy")</p>
-    <h3>Producers</h3>
-    @* <p>@Model.Producers.ToString()</p> *@
-    <!-- Lägg in film beskrivning -->
-    <div class="movie-description">
-        <p>@Model.MovieDescription</p>
+    <div class="upper-detail">
+        <img src='/images/@(Model.MovieImage)' class="movie-image" />
+        <div class="movie-description">
+            <h2>@Model.Title (@Model.ReleaseDate.ToString("yyyy"))</h2>
+            <p>@Model.MovieDescription</p>
+        </div>
     </div>
+    <partial name="_StarScoreboard" />
 </div>
+<script src="~/js/filterGenre.js"></script>

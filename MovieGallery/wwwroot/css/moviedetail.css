@@ -1,3 +1,84 @@
 ﻿.movie-image {
     height: 600px;
+    border-radius: 10px;
+}
+.filled-star {
+    color: #ffd500;
+}
+.empty-star {
+    color: #0e3960;
+}
+.star-scoreboard {
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: #fff;
+    background: var(--bg-secondary);
+    padding: 50px;
+}
+.stars {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.scoreboard {
+    padding: 10px;
+    border-radius: 13px;
+    display: flex;
+    background: var(--bg-box);
+    gap: 10px;
+}
+.star, .bar {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.bars {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.meeter {
+    width: 160px;
+    height: 8px;
+    border-radius: 8px;
+    background: #0e3960;
+}
+.fill-level {
+    height: inherit;
+    background: #ffd500;
+    border-radius: inherit;
+}
+.star p, .bar p {
+    margin: 0;
+    display: flex;
+}
+.stars-average {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: var(--bg-box);
+    padding: 10px;
+    border-radius: 13px;
+    aspect-ratio: 1 / 1;
+}
+.upper-detail {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.movie-description {
+    border-radius: 10px;
+    color: #fff;
+    background: var(--bg-secondary);
+    max-width: 300px;
+}
+.movie-description >* {
+    margin: 20px;
+}
+.movie-detail {
+    margin-top: 30px;
 }
