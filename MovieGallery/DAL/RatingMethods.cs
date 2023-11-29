@@ -1,9 +1,10 @@
 ﻿using Microsoft.Data.SqlClient;
+using MovieGallery.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
 
-namespace MovieGallery.Models
+namespace MovieGallery.DAL
 {
     public class RatingMethods
     {
@@ -30,7 +31,7 @@ namespace MovieGallery.Models
                         break;
                     }
                 }
-            } 
+            }
             else
             {
                 if (int.TryParse(ratingValue, out int rating))
@@ -222,7 +223,7 @@ namespace MovieGallery.Models
 
                 // Assign the average rating to the movie
                 movie.AverageRating = averageRating;
-                movie.NumberOfRatings = ((int)numberOfRatings);
+                movie.NumberOfRatings = (int)numberOfRatings;
 
                 sortedMovies.Add(movie);
             }

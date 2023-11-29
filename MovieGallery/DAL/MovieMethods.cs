@@ -1,12 +1,13 @@
 ﻿using Microsoft.Data.SqlClient;
+using MovieGallery.Models;
 using System.Data;
 
-namespace MovieGallery.Models
+namespace MovieGallery.DAL
 {
     public class MovieMethods
     {
         string connectionString = "Data Source = (localdb)\\MSSQLLocalDB;Initial Catalog = MovieGallery; Integrated Security = True; Connect Timeout = 30; Encrypt=False;Trust Server Certificate=False;Application Intent = ReadWrite; Multi Subnet Failover=False";
-        
+
         private readonly MovieProducerMethods _movieProducerMethods;
         private readonly RatingMethods _ratingMethods;
         public MovieMethods()
@@ -268,13 +269,14 @@ namespace MovieGallery.Models
             List<Movie> results = new List<Movie>();
 
             // If option is present in the genre list...
-            if(genres.Contains(option))
+            if (genres.Contains(option))
             {
-               // Create the list of movies for that genre
-               List<Movie> movieListUnsorted = GetMoviesByGenre(option, out errormsg);
-               // Should the list of movies be sorted by average rating or not?
-               results = isSorted ? _ratingMethods.GetMovieListSortedByAverageRating(movieListUnsorted, out errormsg) : movieListUnsorted;
-            } else
+                // Create the list of movies for that genre
+                List<Movie> movieListUnsorted = GetMoviesByGenre(option, out errormsg);
+                // Should the list of movies be sorted by average rating or not?
+                results = isSorted ? _ratingMethods.GetMovieListSortedByAverageRating(movieListUnsorted, out errormsg) : movieListUnsorted;
+            }
+            else
             {
                 List<Movie> movieListUnsorted = GetAllMovies(out errormsg);
                 results = isSorted ? _ratingMethods.GetMovieListSortedByAverageRating(movieListUnsorted, out errormsg) : movieListUnsorted;

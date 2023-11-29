@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using MovieGallery.DAL;
 using MovieGallery.Models;
 
 namespace MovieGallery.Controllers

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 
-namespace MovieGallery.Models
+namespace MovieGallery.DAL
 {
     public class ProducerMethods
     {

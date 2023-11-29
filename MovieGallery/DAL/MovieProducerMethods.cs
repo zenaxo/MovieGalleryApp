@@ -1,11 +1,12 @@
 ﻿using Microsoft.Data.SqlClient;
+using MovieGallery.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MovieGallery.Models
+namespace MovieGallery.DAL
 {
     public class MovieProducerMethods
     {
@@ -30,7 +31,7 @@ namespace MovieGallery.Models
             // SQL query to retrieve producers for a specific movie
             string sqlQuery = "SELECT * FROM MovieProducers WHERE MovieID = @movieId";
             SqlCommand dbCommand = new SqlCommand(sqlQuery, dbConnection);
-            dbCommand.Parameters.Add("movieId", System.Data.SqlDbType.Int).Value = movieId;
+            dbCommand.Parameters.Add("movieId", SqlDbType.Int).Value = movieId;
 
             try
             {
