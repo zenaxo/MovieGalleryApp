@@ -10,6 +10,7 @@ public static class GlobalVariables
         Genres.Add("Drama");
         Genres.Add("Horror");
         Genres.Add("Comedy");
+        Genres.Add("Animated");
 
         RatingValues.Add("Random");
         RatingValues.Add("1");
