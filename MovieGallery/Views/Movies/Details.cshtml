@@ -16,6 +16,12 @@
         <div class="movie-description">
             <h2>@Model.Title (@Model.ReleaseDate.ToString("yyyy"))</h2>
             <p>@Model.MovieDescription</p>
+            <div>
+                @foreach(var producer in Model.Producers)
+                {
+                    <p>@producer.FirstName @producer.LastName</p>
+                }
+            </div>
         </div>
     </div>
     <partial name="_StarScoreboard" />

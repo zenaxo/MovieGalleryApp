@@ -51,13 +51,51 @@
             }
         </select>
     </div>
+    <h3 style="margin-top:20px;">Producers (Under construction)</h3>
+    <div id="producersContainer">
+        <div class="delete-producers">
+            @foreach(var producer in Model.Producers)
+            {
+                <p>@producer.FirstName @producer.LastName</p>
+            }
+        </div>
+        <div class="producer-form-group">
+            <label for="producers[0].FirstName">First Name</label>
+            <input type="text" asp-for="Producers[0].FirstName" class="form-control" />
+            <span asp-validation-for="Producers[0].FirstName" class="text-danger"></span>
+
+            <label for="producers[0].LastName">Last Name</label>
+            <input type="text" asp-for="Producers[0].LastName" class="form-control" />
+            <span asp-validation-for="Producers[0].LastName" class="text-danger"></span>
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary" id="addProducerBtn" style="margin-top: 20px;">Add Producer</button>
     <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Save changes</button>
 </form>
 
 <a asp-action="Index">Back to List</a>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script>
+        // Script to dynamically add producer input fields
+        var producerCount = 1;
+
+        $("#addProducerBtn").click(function () {
+            var newProducerGroup = $("#producersContainer .producer-form-group:first").clone();
+
+            // Update input names to ensure uniqueness
+            newProducerGroup.find("input").each(function () {
+                var currentName = $(this).attr("name");
+                var newName = currentName.replace("[0]", "[" + producerCount + "]");
+                $(this).attr("name", newName);
+                $(this).val(""); // Clear the input values
+            });
+
+            $("#producersContainer").append(newProducerGroup);
+            producerCount++;
+        });
+        });
+    </script>
+
+    <partial name="_ValidationScriptsPartial" />
 }

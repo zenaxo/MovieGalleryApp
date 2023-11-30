@@ -7,20 +7,20 @@
 
 <div class="star-scoreboard">
     <div class="stars-average">
-        <h2>@Model.AverageRating.ToString("0.0")</h2>
+        <h2>@Model.Rating.AverageRating.ToString("0.0")</h2>
         <div>
-            @{var averageRating = (int)Math.Round(Model.AverageRating);}
+            @{var averageRating = (int)Math.Round(Model.Rating.AverageRating);}
             @for (int i = 1; i <= 5; i++)
             {
                 string starClass = i <= averageRating ? "filled-star" : "empty-star";
                 <i class="fa-solid fa-star @starClass"></i>
             }
         </div>
-        <p>(@Model.NumberOfRatings)</p>
+        <p>(@Model.Rating.NumberOfRatings)</p>
     </div>
     <div class="scoreboard">
         <div class="stars">
-            @foreach(var star in Model.Stars)
+            @foreach(var star in Model.Rating.Stars)
             {
                 <section class="star" id="@star.rating">
                     <p>@star.rating</p>
@@ -29,8 +29,8 @@
             }
         </div>
         <div class="bars">
-            @{var max = Model.Stars.Max(t => t.total);}
-            @foreach (var star in Model.Stars)
+            @{var max = Model.Rating.Stars.Max(t => t.total);}
+            @foreach (var star in Model.Rating.Stars)
             {
                 <section class="bar">
                     <div class="meeter">

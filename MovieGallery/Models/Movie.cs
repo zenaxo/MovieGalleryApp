@@ -21,10 +21,8 @@ namespace MovieGallery.Models
         [NotMapped]
         [DisplayName("Image")]
         public IFormFile? ImageFile { get; set; }
-        public List<MovieProducer> ?Producers { get; set; }
-        public double AverageRating { get; set; }
-        public int NumberOfRatings { get; set; }
-        public List<Star>? Stars { get; set; }
+        public List<Producer> Producers { get; set; } = new List<Producer>();
+        public Rating? Rating { get; set; }
     }
 
 }

@@ -202,7 +202,7 @@ namespace MovieGallery.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Movie obj, int numRatings, string ratingValue)
+        public IActionResult Edit(Movie obj, int numRatings, string ratingValue, List<Producer> producers)
         {
             if (ModelState.IsValid)
             {
@@ -234,7 +234,7 @@ namespace MovieGallery.Controllers
 
                 int i = 0;
 
-                i = _movieMethods.UpdateMovie(obj, numRatings, ratingValue, out error);
+                i = _movieMethods.UpdateMovie(obj, producers, numRatings, ratingValue, out error);
                 if (!string.IsNullOrEmpty(error))
                 {
                     TempData["Error"] = error;

@@ -57,12 +57,12 @@
     <div id="producersContainer">
         <div class="producer-form-group">
             <label for="producers[0].FirstName">First Name</label>
-            <input type="text" asp-for="Producers[0].Producer.FirstName" class="form-control" />
-            <span asp-validation-for="Producers[0].Producer.FirstName" class="text-danger"></span>
+            <input type="text" asp-for="Producers[0].FirstName" class="form-control" />
+            <span asp-validation-for="Producers[0].FirstName" class="text-danger"></span>
 
             <label for="producers[0].LastName">Last Name</label>
-            <input type="text" asp-for="Producers[0].Producer.LastName" class="form-control" />
-            <span asp-validation-for="Producers[0].Producer.LastName" class="text-danger"></span>
+            <input type="text" asp-for="Producers[0].LastName" class="form-control" />
+            <span asp-validation-for="Producers[0].LastName" class="text-danger"></span>
         </div>
     </div>
     <button type="button" class="btn btn-primary" id="addProducerBtn" style="margin-top: 20px;">Add Producer</button>

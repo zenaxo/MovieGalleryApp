@@ -1,16 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace MovieGallery.Models
+﻿namespace MovieGallery.Models
 {
     public class Rating
     {
-        [Key]
-        public int RatingID { get; set; }
-        public int MovieID { get; set; }
-        [Required]
-        public int RatingValue { get; set; }
-        [ForeignKey("MovieID")]
-        public Movie Movie { get; set;}
+        public double AverageRating { get; set; }
+        public int NumberOfRatings { get; set; }
+        public List<Star>? Stars { get; set; }
     }
 }

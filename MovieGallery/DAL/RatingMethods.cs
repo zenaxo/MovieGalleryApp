@@ -222,14 +222,14 @@ namespace MovieGallery.DAL
                 }
 
                 // Assign the average rating to the movie
-                movie.AverageRating = averageRating;
-                movie.NumberOfRatings = (int)numberOfRatings;
+                movie.Rating.AverageRating = averageRating;
+                movie.Rating.NumberOfRatings = (int)numberOfRatings;
 
                 sortedMovies.Add(movie);
             }
 
             // Sort the movies by average rating in descending order
-            sortedMovies = sortedMovies.OrderByDescending(m => m.AverageRating).ToList();
+            sortedMovies = sortedMovies.OrderByDescending(m => m.Rating.AverageRating).ToList();
 
             errormsg = "";
             return sortedMovies;

@@ -8,12 +8,12 @@ namespace MovieGallery.DAL
     {
         string connectionString = "Data Source = (localdb)\\MSSQLLocalDB;Initial Catalog = MovieGallery; Integrated Security = True; Connect Timeout = 30; Encrypt=False;Trust Server Certificate=False;Application Intent = ReadWrite; Multi Subnet Failover=False";
 
-        private readonly MovieProducerMethods _movieProducerMethods;
         private readonly RatingMethods _ratingMethods;
+        private readonly ProducerMethods _producerMethods;
         public MovieMethods()
         {
-            _movieProducerMethods = new MovieProducerMethods();
             _ratingMethods = new RatingMethods();
+            _producerMethods = new ProducerMethods();
         }
         private SqlConnection CreateConnection()
         {
@@ -64,11 +64,6 @@ namespace MovieGallery.DAL
                         errorMessage = e.Message;
                     }
                 }
-            }
-
-            foreach (var movie in movies)
-            {
-                movie.Producers = _movieProducerMethods.GetProducersByMovieId(movie.MovieID, out errorMessage);
             }
 
             return movies;
@@ -201,7 +196,6 @@ namespace MovieGallery.DAL
                             if (reader.HasRows)
                             {
                                 reader.Read();
-
                                 // Create a Movie object for the row
                                 movie = new Movie
                                 {
@@ -211,9 +205,8 @@ namespace MovieGallery.DAL
                                     MovieImage = reader["MovieImage"].ToString(),
                                     ReleaseDate = Convert.ToDateTime(reader["ReleaseDate"]),
                                     MovieDescription = reader["MovieDescription"].ToString(),
-                                    NumberOfRatings = _ratingMethods.GetNumberOfRatings(movieId, out errorMessage),
-                                    AverageRating = _ratingMethods.GetAverageRating(movieId, out errorMessage),
-                                    Stars = _ratingMethods.GetStars(movieId, out errorMessage)
+                                    Rating = GetRatingForMovie(movieId, out errorMessage),
+                                    Producers = _producerMethods.GetProducersForMovie(movieId, out errorMessage),
 
                                 };
                             }
@@ -261,7 +254,18 @@ namespace MovieGallery.DAL
 
             return movie;
         }
+        private Rating GetRatingForMovie(int movieId, out string errorMessage)
+        {
+            errorMessage = "";
 
+            Rating rating = new Rating
+            {
+                AverageRating = _ratingMethods.GetAverageRating(movieId, out errorMessage),
+                NumberOfRatings = _ratingMethods.GetNumberOfRatings(movieId, out errorMessage),
+                Stars = _ratingMethods.GetStars(movieId, out errorMessage),
+            };
+            return rating;
+        }
         public List<Movie> GetMovieList(out string errormsg, string option = "all", bool isSorted = false)
         {
             List<string> genres = GlobalVariables.Genres;
@@ -284,8 +288,8 @@ namespace MovieGallery.DAL
             // Get the average rating and number of ratings for each movie in the movie list
             foreach (Movie movie in results)
             {
-                movie.AverageRating = _ratingMethods.GetAverageRating(movie.MovieID, out errormsg);
-                movie.NumberOfRatings = _ratingMethods.GetNumberOfRatings(movie.MovieID, out errormsg);
+                movie.Rating = GetRatingForMovie(movie.MovieID, out errormsg);
+                movie.Producers = _producerMethods.GetProducersForMovie(movie.MovieID, out errormsg);
             }
             return results;
         }
@@ -318,20 +322,16 @@ namespace MovieGallery.DAL
 
                         if (movieId > 0)
                         {
-                            //foreach (var producer in producers)
-                            //{
-                            //    string producerErrorMsg;
-                            //    _movieProducerMethods.AddProducerToMovie(movieId, producer, out producerErrorMsg);
-
-                            //    if (!string.IsNullOrEmpty(producerErrorMsg))
-                            //    {
-                            //        // Log or handle the producer insertion error
-                            //    }
-                            //}
-
                             transaction.Commit();
                             errormsg = "";
+
+                            foreach(var producer in producers)
+                            {
+                                _producerMethods.InsertMovieProducer(producer.FirstName, producer.LastName, movieId, out errormsg);
+                            }
+
                             _ratingMethods.GenerateRatings(movieId, numRatings, ratingValue, out errormsg);
+
                             return 1; // Success
                         }
                         else
@@ -349,7 +349,7 @@ namespace MovieGallery.DAL
                 }
             }
         }
-        public int UpdateMovie(Movie movie, int numRatings, string ratingValue, out string errormsg)
+        public int UpdateMovie(Movie movie, List<Producer> producers, int numRatings, string ratingValue, out string errormsg)
         {
             using (SqlConnection dbConnection = new SqlConnection(connectionString))
             {
@@ -381,6 +381,11 @@ namespace MovieGallery.DAL
                                 // Generate ratings after updating the movie
                                 _ratingMethods.GenerateRatings(movie.MovieID, numRatings, ratingValue, out errormsg);
 
+                                foreach (var producer in producers)
+                                {
+                                    _producerMethods.InsertMovieProducer(producer.FirstName, producer.LastName, movie.MovieID, out errormsg);
+                                }
+
                                 return 1;
                             }
                             catch (Exception e)
@@ -400,7 +405,6 @@ namespace MovieGallery.DAL
                 }
             }
         }
-
         public int DeleteMovie(int movieId, out string errormsg)
         {
             using (SqlConnection dbConnection = new SqlConnection(connectionString))
