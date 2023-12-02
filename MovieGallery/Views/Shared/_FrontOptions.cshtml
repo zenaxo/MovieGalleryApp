@@ -1,0 +1,66 @@
+﻿@model MoviesViewModel
+<div class="front-options">
+    <div class="option opt-button">
+        <button onclick="filterTopRated()">
+            <h2 class="">Top rated</h2>
+        </button>
+    </div>
+    <div class="option">
+        <h2>New Releases</h2>
+    </div>
+    <div class="option">
+        <div class="dropdown">
+            <h2 id="genreTrigger" class="genre-trigger">Genres</h2>
+            <div class="genre-list">
+                @foreach (var genre in GlobalVariables.Genres)
+                {
+                    if (genre != ViewBag.SelectedGenre)
+                    {
+                        <button type="button" onclick="filterGenre('@genre')">
+                            <h2>@genre</h2>
+                        </button>
+                    }
+                }
+            </div>
+            <p>@ViewBag.SelectedGenre</p>
+        </div>
+    </div>
+</div>
+<script>
+    function filterGenre(genre) {
+        $.ajax({
+            url: '/Movies/UpdateGenre',
+            type: 'POST',
+            data: { selectedGenre: genre },
+            success: function (result) {
+                updateGenreTrigger(genre);
+                var updatedGenre = result.selectedGenre;
+                $('#moviesContainer').html(result);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error updating server genre:', error);
+                console.log('XHR:', xhr);
+                console.log('Status:', status);
+            }
+        });
+    }
+
+    function updateGenreTrigger(genre) {
+        $('#genreTrigger').text(genre);
+    }
+    function updateServerGenre(genre, callback) {
+        $.ajax({
+            url: '/Movies/UpdateGenre',
+            type: 'POST',
+            data: { selectedGenre: genre },
+            success: function (result) {
+                callback();
+            },
+            error: function (xhr, status, error) {
+                console.error('Error updating server genre:', error);
+                console.log('XHR:', xhr);
+                console.log('Status:', status);
+            }
+        });
+    }
+</script>

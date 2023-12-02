@@ -213,7 +213,7 @@ namespace MovieGallery.DAL
             {
                 // Calculate average rating for each movie
                 double averageRating = GetAverageRating(movie.MovieID, out errormsg);
-                double numberOfRatings = GetNumberOfRatings(movie.MovieID, out errormsg);
+                int numberOfRatings = GetNumberOfRatings(movie.MovieID, out errormsg);
 
                 if (!string.IsNullOrEmpty(errormsg))
                 {
@@ -222,8 +222,10 @@ namespace MovieGallery.DAL
                 }
 
                 // Assign the average rating to the movie
-                movie.Rating.AverageRating = averageRating;
-                movie.Rating.NumberOfRatings = (int)numberOfRatings;
+                Rating rating = new Rating();
+                rating.AverageRating = averageRating;
+                rating.NumberOfRatings = numberOfRatings;
+                movie.Rating = rating;
 
                 sortedMovies.Add(movie);
             }

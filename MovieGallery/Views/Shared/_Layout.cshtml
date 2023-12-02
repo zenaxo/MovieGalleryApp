@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - MovieGallery</title>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MovieGallery.styles.css" asp-append-version="true" />
@@ -11,29 +12,22 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white box-shadow mb-0">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Movies" asp-action="Index">MovieGallery</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Movies" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Movies" asp-action="Create">Add Movie</a>
-                        </li>
-                        <li class="search-container">
-                            <form class="form-inline my-2 my-lg-0" action="javascript:void(0);" id="searchForm">
-                                <input class="form-control mr-sm-2" type="search" placeholder="Search Movies" aria-label="Search" name="title" id="searchInput">
-                                <div id="searchResultsContainer"></div>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
+        <nav class="navbar navbar-dark">
+            <div class="nav-section">
+                <a class="navbar-brand" asp-controller="Movies" asp-action="Index">
+                    <i class="fa-brands fa-square-pied-piper"></i>
+                </a>
+                <form class="form-inline search-box">
+                    <button class="btn-search"><i class="fas fa-search"></i></button>
+                    <input type="search" class="input-search" placeholder="Search Movies" aria-label="Search" name="title" id="searchInput">
+                    <div id="searchResultsContainer" class="search-results"></div>
+                </form>
+            </div>
+            <div class="nav-section">
+                <a class="nav-link" asp-controller="Movies" asp-action="Create">
+                    <i class="fa-solid fa-plus"></i>
+                    <p>Movie</p>
+                </a>
             </div>
         </nav>
     </header>
@@ -48,10 +42,10 @@
             &copy; 2023 - MovieGallery - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/handleSearchInput.js"></script>
+    <script src="~/js/goToMovieDetails.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

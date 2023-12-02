@@ -1,0 +1,10 @@
+﻿h2 {
+    color: white;
+}
+h3, label {
+    color: rgb(255, 255, 255);
+}
+.producer-btn {
+    width: 100%;
+    background: none;
+}

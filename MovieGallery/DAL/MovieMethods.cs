@@ -266,7 +266,7 @@ namespace MovieGallery.DAL
             };
             return rating;
         }
-        public List<Movie> GetMovieList(out string errormsg, string option = "all", bool isSorted = false)
+        public List<Movie> GetMovieList(out string errormsg, string option = "Genres", bool isSorted = false)
         {
             List<string> genres = GlobalVariables.Genres;
 

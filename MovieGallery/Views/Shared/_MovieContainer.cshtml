@@ -1,34 +1,23 @@
 ﻿@model Movie
 <div class="movie-container" id="@Model.MovieID">
-    <img src='~/images/@(Model.MovieImage)' class="movie-image" data-movie-id="@Model.MovieID" />
-    <div class="title-container">
-        <h2>@Model.Title</h2>
-        <p>@Model.ReleaseDate.ToString("yyyy")</p>
-    </div>
-    <div class="actions">
-        <button type="button" class="genre-button" onclick="filterGenre('@Model.Genre')">
-            <p>@Model.Genre</p>
-        </button>
-        <div class="rating-container">
-            @{
-                var averageRating = Model.Rating.AverageRating;
-                var numberOfRatings = Model.Rating.NumberOfRatings;
-            }
-            <div class="avg-rating">
-                <i class="fa-solid fa-star" style="color: #ffd500;"></i>
-                <p class="avg">@averageRating.ToString("0.0")</p>
-            </div>
-            <div class="num-ratings">
-                <p>(@numberOfRatings)</p>
-            </div>
+    <img src='~/images/@(Model.MovieImage)' class="movie-image" data-movie-id="@Model.MovieID" alt="@Model.Title"/>
+    <div class="movie-details">
+        <div class="title-container">
+            <h2>@Model.Title</h2>
         </div>
-        <a asp-action="Edit" asp-route-id="@Model.MovieID" class="edit-movie">
-            <p>Edit</p>
-            <i class="fa-solid fa-pen-to-square" style="color: var(--bg-box);"></i>
-        </a>
-        <a asp-action="Delete" asp-route-id="@Model.MovieID" class="edit-movie">
-            <p>Delete</p>
-            <i class="fa-solid fa-trash" style="color: var(--bg-box);"></i>
-        </a>
+        <p>@Model.ReleaseDate.ToString("yyyy")</p>
+        <div class="movie-rating">
+            <div>
+                @{
+                    var averageRating = (int)Math.Round(Model.Rating.AverageRating);
+                }
+                @for (int i = 1; i <= 5; i++)
+                {
+                    string starClass = i <= averageRating ? "filled-star" : "empty-star";
+                    <i class="fa-solid fa-star @starClass"></i>
+                }
+            </div>
+            <p>@Model.Rating.AverageRating.ToString("0.0") / 5</p>
+        </div>
     </div>
 </div>

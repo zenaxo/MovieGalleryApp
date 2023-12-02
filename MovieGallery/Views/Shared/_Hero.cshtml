@@ -1,0 +1,27 @@
+﻿<div class="hero-wrapper">
+    <div class="hero-container">
+        <img src="~/images/Static/oppenheimerlg.jpg" />
+        <div class="hero-info">
+            <h1>Oppenheimer 2023</h1>
+            <p>
+                The story of American scientist, J. Robert Oppenheimer, and his role in the development of the atomic bomb.
+            </p>
+            <div class="stars-average">
+                @{var averageRating = 4.2;}
+                <h2>@averageRating.ToString("0.0")</h2>
+                <div>
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        string starClass = i <= averageRating ? "filled-star" : "empty-star";
+                        <i class="fa-solid fa-star @starClass"></i>
+                    }
+                </div>
+                <p>526k</p>
+            </div>
+            <button class="btn-primary btn hero-btn">
+                Show more
+            </button>
+        </div>
+    </div>
+</div>
+

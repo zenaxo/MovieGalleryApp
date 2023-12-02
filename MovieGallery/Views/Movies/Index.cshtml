@@ -1,30 +1,39 @@
 ﻿@model MoviesViewModel
 <link rel="stylesheet" href="~/css/movies.css" asp-append-version="true" />
-<partial name="_MovieFilterTab" />
-@if (!string.IsNullOrEmpty(ViewBag.Error))
-{
-    <div class="alert alert-danger">
-        @ViewBag.Error
+<link rel="stylesheet" href="~/css/hero.css" asp-append-version="true" />
+<div class="page-wrapper" style="margin-top: 80vh">
+    <partial name="_Hero" />
+    <partial name="_FrontOptions" />
+    @if (!string.IsNullOrEmpty(ViewBag.Error))
+    {
+        <div class="alert alert-danger">
+            @ViewBag.Error
+        </div>
+    }
+    <div class="movies-disp" id="moviesContainer">
+        @await Html.PartialAsync("_MovieListPartial", Model)
     </div>
-}
-<div class="header">
-    <h2>@Model.FilterOption movies</h2>
-</div>
-<div class="movies-disp">
-    @if (Model.Movies.Count != 0)
-    {
-        @foreach (var movie in Model.Movies)
-        {
-            <partial name="_MovieContainer" model="movie"/>
-        }
-    }
-    else
-    {
-        <h3>No movies available</h3>
-    }
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var scrolled = false;
 
+            // Scroll down to 80vh smoothly when the user starts scrolling
+            window.addEventListener("scroll", function () {
+                if (window.scrollY === 0) {
+                    // User is at the top again, reset scrolled to false
+                    scrolled = false;
+                } else if (!scrolled) {
+                    // Scroll down to 80vh smoothly when the user starts scrolling
+                    window.scrollTo({
+                        top: window.innerHeight * 0.81,
+                        behavior: "smooth"
+                    });
+                    scrolled = true;
+                }
+            });
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="~/js/filterTopRated.js"></script>
 </div>
-<script src="~/js/filterGenre.js"></script>
-<script src="~/js/applyGenreFilter.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="~/js/goToMovieDetails.js"></script>
+

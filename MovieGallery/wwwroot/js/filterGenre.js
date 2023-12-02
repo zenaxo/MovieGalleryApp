@@ -1,7 +1,32 @@
-﻿function filterGenre(movieGenre) {
-    var selectedGenre = movieGenre;  // Use the movie's genre instead of movie ID
-    var isSortedByAverageRating = $("#isSortedByAverageRating").is(":checked");
+﻿//function filterGenre(genre) {
+//    $.ajax({
+//        url: '/Movies',
+//        type: 'GET',
+//        data: { filterOption: genre },
+//        success: function (result) {
+//            $('#moviesContainer').html(result);
+//            updateGenreTrigger(genre);
+//            removeGenreFromList(genre);
+//        },
+//        error: function (xhr, status, error) {
+//            console.error('Error:', error);
+//            console.log('XHR:', xhr);
+//            console.log('Status:', status);
+//        }
+//    });
+//}
 
-    // Use AJAX or redirect to update the URL with both filter and sorting options
-    window.location.href = "?filterOption=" + selectedGenre + "&isSortedByAverageRating=" + isSortedByAverageRating;
-}
+//function updateGenreTrigger(genre) {
+//    $('#genreTrigger').text(genre);
+//}
+
+//function removeGenreFromList(genre) {
+//    // Add the selected genre to the list of selected genres
+//    if (!ViewBag.SelectedGenres) {
+//        ViewBag.SelectedGenres = [];
+//    }
+//    ViewBag.SelectedGenres.push(genre);
+
+//    // Remove the selected genre button from the genre list
+//    $('.genre-list button:contains("' + genre + '")').remove();
+//}

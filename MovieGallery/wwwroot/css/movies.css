@@ -1,4 +1,75 @@
-﻿.filter-options {
+﻿/* Genre segment */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.genre-trigger {
+    cursor: pointer;
+}
+
+.genre-list {
+    display: none;
+    position: absolute;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: rgba(0,0,0,0.2);
+    z-index: 1;
+}
+.option .genre-list h2:hover {
+    text-decoration: none;
+}
+.genre-list button:hover {
+    background: rgba(0,0,0,0.5);
+}
+.genre-list button {
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+.opt-button button {
+    border: none;
+    background: none;
+}
+/* Show the dropdown when the trigger is hovered or focused */
+.dropdown:hover .genre-list {
+    display: block;
+}
+
+.dropdown:focus-within .genre-list {
+    display: block;
+}
+/* New segment */
+
+.front-options .option .active {
+    color: #ffffff;
+    text-decoration: underline;
+    text-underline-offset: 10px;
+}
+.option h2 {
+    cursor: pointer;
+    color: #b6b6b6;
+}
+.option h2:hover {
+    text-decoration: underline;
+    text-underline-offset: 10px;
+}
+.front-options {
+    margin-block: 20px;
+    display: flex;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #b6b6b6;
+}
+.front-options .option {
+    text-align: center;
+}
+.option {
+    position: relative;
+    flex: 100%;
+}
+.filter-options {
     gap: 40px;
     display: flex;
     align-items: center;
@@ -12,13 +83,21 @@
     position: relative;
 }
 .movies-disp {
+    width: 100%;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 100px;
+    grid-template-columns: repeat(auto-fill, calc(35vh / 1.5));
+    gap: 32px;
+}
+.title-container h2 {
+    overflow: hidden;
+    display: inline-block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
     color: #ffff;
 }
 .header {
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     color: #ffff;
     background: var(--bg-box);
     border-radius: 10px;
@@ -27,83 +106,38 @@
     padding-block: 20px;
     margin-left: 15px;
 }
+.movie-container {
+    position: relative;
+}
 .movie-container img {
-    border-radius: inherit;
+    height: 35vh;
+    aspect-ratio: 2 / 3;
+    border-radius: 20px;
     cursor: pointer;
-    width: 100%;
-    height: 450px;
     object-fit: cover;
-    margin-bottom: 20px;
 }
 .movie-container img:hover {
-    border: 2px solid rgb(255, 255, 255);
+    border: 2px solid white;
 }
-.movie-container {
-    border-radius: 10px;
-    outline: 1px solid rgba(0,0,0, 0.1);
-    background: var(--bg-box);
-    -webkit-box-shadow: -2px 5px 17px -3px #000000;
-    box-shadow: -2px 5px 17px -3px #000000;
-    box-shadow: 2px -1px 43px -15px rgba(12,11,64,0.76) inset;
-}
-.actions {
+.movie-rating {
     display: flex;
-    justify-content: space-around;
-    margin-inline: 10px;
-    align-items: center;
-    margin-bottom: 15px;
+    gap: 10px;
 }
-.avg-rating {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.num-ratings {
-    font-weight: lighter;
-    font-size: 14px;
-}
-.rating-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-.genre-button {
-    outline: none;
-    border: none;
-    height: 40px;
-    cursor: pointer;
-    border-radius: 10px;
-    background: var(--bg-primary);
-}
-.genre-button:hover {
-    background: var(--bg-buttonhover);
-}
-.edit-movie {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: var(--bg-primary);
-    border-radius: 10px;
-    padding-inline: 15px;
-    color: var(--bg-box);
-    height: 40px;
-}
-.edit-movie:hover p {
-    color: var(--bg-box);
-}
-.edit-movie:hover {
-    background: var(--bg-buttonhover);
-}
-.title-container {
-    height: 130px;
-    width: 300px;
-    margin-inline: 15px;
-}
-.movie-container p {
+.movie-details p, .movie-details h2 {
     margin: 0;
+    color: #ffff;
 }
-.delete-movie {
-    position: absolute;
+.rating-statistic {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.filled-star {
+    color: #ffd500;
+}
+
+.empty-star {
+    color: #0e3960;
 }
 

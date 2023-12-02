@@ -19,6 +19,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Views\Shared\Partials\" />
+	  <Folder Include="wwwroot\images\Static\" />
 	</ItemGroup>
 
 </Project>

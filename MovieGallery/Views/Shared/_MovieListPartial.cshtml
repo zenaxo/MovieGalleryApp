@@ -1,0 +1,13 @@
+﻿@model MoviesViewModel
+
+@if (Model.Movies.Count != 0)
+{
+    @foreach (var movie in Model.Movies)
+    {
+        <partial name="_MovieContainer" model="movie" />
+    }
+}
+else
+{
+    <h3>No movies available</h3>
+}

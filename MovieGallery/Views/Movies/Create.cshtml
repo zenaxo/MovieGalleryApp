@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Create";
 }
-
+<link rel="stylesheet" href="~/css/formstyle.css" asp-append-version="true" />
 <h2 style="margin-top:20px;">Create Movie</h2>
 
 <form asp-action="Create" enctype="multipart/form-data">
@@ -53,7 +53,7 @@
             }
         </select>
     </div>
-    <h3 style="margin-top:20px;">Producers (Under construction)</h3>
+    <h3 style="margin-top:20px;">Producers</h3>
     <div id="producersContainer">
         <div class="producer-form-group">
             <label for="producers[0].FirstName">First Name</label>
@@ -64,8 +64,8 @@
             <input type="text" asp-for="Producers[0].LastName" class="form-control" />
             <span asp-validation-for="Producers[0].LastName" class="text-danger"></span>
         </div>
+        <button type="button" class="btn btn-primary producer-btn" id="addProducerBtn" style="margin-top: 20px;">Add Producer</button>
     </div>
-    <button type="button" class="btn btn-primary" id="addProducerBtn" style="margin-top: 20px;">Add Producer</button>
 
     <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Save</button>
 </form>
