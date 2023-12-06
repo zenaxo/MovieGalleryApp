@@ -15,58 +15,40 @@ namespace MovieGallery.Controllers
             _webHostEnvironment = webHostEnvironment;
             _movieMethods = new MovieMethods();
         }
-        public IActionResult Index(string filterOption = "Genres", bool isSortedByAverageRating = false)
+
+        public IActionResult Index(string filterOption = "Genres", bool isSortedByAverageRating = false, bool isSortedByDate = false)
         {
-            // Display potential errors from pages redirecting to Index
             ViewBag.Error = TempData["Error"];
 
+            Options options = new Options
+            {
+                FilterOption = filterOption,
+                IsSortedByAverageRating = isSortedByAverageRating,
+                IsSortedByDate = isSortedByDate
+            };
+
             string errorMessage;
-            var movies = _movieMethods.GetMovieList(out errorMessage, filterOption, isSortedByAverageRating);
+            var movies = _movieMethods.GetMovieList(options, out errorMessage);
 
             if (!string.IsNullOrEmpty(errorMessage))
             {
                 // Handle the error, e.g., log it or display an error message
                 ViewBag.ErrorMessage = errorMessage;
             }
-            
+
             var viewModel = new MoviesViewModel
             {
                 Movies = movies,
-                FilterOption = filterOption,
-                IsSortedByAverageRating = isSortedByAverageRating
+                Options = options
             };
 
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
                 // If it's an AJAX request, return a partial view
-                return PartialView("_MovieListPartial", viewModel);
+                return PartialView("_DynamicContent", viewModel);
             }
 
             return View(viewModel);
-        }
-
-        [HttpPost]
-        public IActionResult UpdateGenre(string selectedGenre)
-        {
-            ViewBag.SelectedGenre = selectedGenre;
-
-            // Assuming you have a method to get the updated movie list based on the new genre
-            var movies = _movieMethods.GetMovieList(out string errorMessage, selectedGenre, false);
-
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                ViewBag.ErrorMessage = errorMessage;
-            }
-
-            var viewModel = new MoviesViewModel
-            {
-                Movies = movies,
-                FilterOption = selectedGenre,
-                IsSortedByAverageRating = false
-            };
-
-            // Return the updated partial view
-            return PartialView("_MovieListPartial", viewModel);
         }
         public IActionResult Search(string title)
         {

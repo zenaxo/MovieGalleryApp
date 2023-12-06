@@ -212,37 +212,6 @@ namespace MovieGallery.DAL
                             }
                         }
 
-                        // Get Movie Producers
-                        //List<Producer> producers = new List<Producer>();
-                        //using (SqlCommand producerCommand = new SqlCommand("GetProducersForMovie", dbConnection))
-                        //{
-                        //    producerCommand.CommandType = CommandType.StoredProcedure;
-                        //    producerCommand.Parameters.Add("@MovieID", SqlDbType.Int).Value = movieId;
-
-                        //    // Execute the command
-                        //    using (SqlDataReader producerReader = producerCommand.ExecuteReader())
-                        //    {
-                        //        if (producerReader.HasRows)
-                        //        {
-                        //            while (producerReader.Read())
-                        //            {
-                        //                string firstName = producerReader["FirstName"].ToString();
-                        //                string lastName = producerReader["LastName"].ToString();
-
-                        //                // Create a Producer and add it to the list
-                        //                producers.Add(new Producer
-                        //                {
-                        //                    FirstName = firstName,
-                        //                    LastName = lastName
-                        //                });
-                        //            }
-                        //        }
-                        //    }
-                        //}
-
-                        //// Assign the list of producers to the movie object
-                        //movie.Producers = producers;
-
                         errorMessage = "";
                     }
                     catch (Exception e)
@@ -266,24 +235,29 @@ namespace MovieGallery.DAL
             };
             return rating;
         }
-        public List<Movie> GetMovieList(out string errormsg, string option = "Genres", bool isSorted = false)
+        public List<Movie> GetMovieList(Options options, out string errormsg)
         {
             List<string> genres = GlobalVariables.Genres;
 
             List<Movie> results = new List<Movie>();
 
             // If option is present in the genre list...
-            if (genres.Contains(option))
+            if (genres.Contains(options.FilterOption))
             {
                 // Create the list of movies for that genre
-                List<Movie> movieListUnsorted = GetMoviesByGenre(option, out errormsg);
+                List<Movie> movieListUnsorted = GetMoviesByGenre(options.FilterOption, out errormsg);
                 // Should the list of movies be sorted by average rating or not?
-                results = isSorted ? _ratingMethods.GetMovieListSortedByAverageRating(movieListUnsorted, out errormsg) : movieListUnsorted;
+                results = options.IsSortedByAverageRating ? _ratingMethods.GetMovieListSortedByAverageRating(movieListUnsorted, out errormsg) : movieListUnsorted;
             }
             else
             {
                 List<Movie> movieListUnsorted = GetAllMovies(out errormsg);
-                results = isSorted ? _ratingMethods.GetMovieListSortedByAverageRating(movieListUnsorted, out errormsg) : movieListUnsorted;
+                results = options.IsSortedByAverageRating ? _ratingMethods.GetMovieListSortedByAverageRating(movieListUnsorted, out errormsg) : movieListUnsorted;
+            }
+            // Should the movies be ordered by date?
+            if(options.IsSortedByDate)
+            {
+                results = OrderMovieListByDate(results, out errormsg);
             }
             // Get the average rating and number of ratings for each movie in the movie list
             foreach (Movie movie in results)
@@ -292,6 +266,23 @@ namespace MovieGallery.DAL
                 movie.Producers = _producerMethods.GetProducersForMovie(movie.MovieID, out errormsg);
             }
             return results;
+        }
+
+        private List<Movie> OrderMovieListByDate(List<Movie> movielist, out string errormsg)
+        {
+            errormsg = string.Empty;
+
+            try
+            {
+                List<Movie> orderedMovies = movielist.OrderByDescending(movie => movie.ReleaseDate).ToList();
+                return orderedMovies;
+            }
+            catch (Exception e)
+            {
+                errormsg = $"Error ordering movies: {e.Message}";
+                return null;
+            }
+          
         }
         public int InsertMovie(Movie movie, List<Producer> producers, int numRatings, string ratingValue, out string errormsg)
         {

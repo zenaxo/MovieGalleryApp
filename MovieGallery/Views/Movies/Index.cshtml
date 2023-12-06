@@ -3,15 +3,14 @@
 <link rel="stylesheet" href="~/css/hero.css" asp-append-version="true" />
 <div class="page-wrapper" style="margin-top: 80vh">
     <partial name="_Hero" />
-    <partial name="_FrontOptions" />
     @if (!string.IsNullOrEmpty(ViewBag.Error))
     {
         <div class="alert alert-danger">
             @ViewBag.Error
         </div>
     }
-    <div class="movies-disp" id="moviesContainer">
-        @await Html.PartialAsync("_MovieListPartial", Model)
+    <div id="dynamicContent">
+        @await Html.PartialAsync("_DynamicContent", Model)
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -34,6 +33,5 @@
         });
     </script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="~/js/filterTopRated.js"></script>
 </div>
 

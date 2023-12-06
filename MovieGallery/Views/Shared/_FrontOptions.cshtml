@@ -1,63 +1,83 @@
 ﻿@model MoviesViewModel
+@{
+    var topRatedClass = Model.Options.IsSortedByAverageRating ? "active" : "";
+    var newClass = Model.Options.IsSortedByDate ? "active" : "";
+}
 <div class="front-options">
-    <div class="option opt-button">
-        <button onclick="filterTopRated()">
-            <h2 class="">Top rated</h2>
-        </button>
+    <div class="option toggle">
+        @if(!Model.Options.IsSortedByAverageRating)
+        {
+            <button onclick="filterMovies(
+                        '@(!Model.Options.IsSortedByAverageRating)'.toLowerCase(),
+                        '@Model.Options.FilterOption',
+                        false)">
+                <h2 class="@topRatedClass">Top rated</h2>
+            </button>
+        }
+        else
+        {
+            <button onclick="filterMovies(
+                        '@(!Model.Options.IsSortedByAverageRating)'.toLowerCase(),
+                        '@Model.Options.FilterOption',
+                        '@(Model.Options.IsSortedByDate)'.toLowerCase())">
+                <h2 class="@topRatedClass">Top rated</h2>
+            </button>
+        }
     </div>
-    <div class="option">
-        <h2>New Releases</h2>
+    <div class="option toggle">
+        @if(!Model.Options.IsSortedByDate)
+        {
+            <button onclick="filterMovies(
+                        false,
+                        '@Model.Options.FilterOption',
+                        '@(!Model.Options.IsSortedByDate)'.toLowerCase())">
+                <h2 class="@newClass">New</h2>
+            </button>
+        }
+        else
+        {
+            <button onclick="filterMovies(
+                        '@Model.Options.IsSortedByAverageRating'.toLowerCase(),
+                        '@Model.Options.FilterOption',
+                        '@(!Model.Options.IsSortedByDate)'.toLowerCase())">
+                <h2 class="@newClass">New</h2>
+            </button>
+        }
     </div>
-    <div class="option">
-        <div class="dropdown">
-            <h2 id="genreTrigger" class="genre-trigger">Genres</h2>
-            <div class="genre-list">
-                @foreach (var genre in GlobalVariables.Genres)
+    <div class="option custom-dropdown big">
+        <select id="genreFilter" class="h2" asp-for="Options.FilterOption" onchange="filterMovies(
+                        '@(Model.Options.IsSortedByAverageRating)'.toLowerCase(),
+                        this.value,
+                        '@(Model.Options.IsSortedByDate)'.toLowerCase())">
+            @foreach (var genre in GlobalVariables.GenreList)
+            {
+                if (genre.Equals("All"))
                 {
-                    if (genre != ViewBag.SelectedGenre)
-                    {
-                        <button type="button" onclick="filterGenre('@genre')">
-                            <h2>@genre</h2>
-                        </button>
-                    }
+                    <option value="Genres" class="h2">All genres</option>
                 }
-            </div>
-            <p>@ViewBag.SelectedGenre</p>
-        </div>
+                else
+                {
+                    <option value="@genre" class="h2">@genre</option>
+                }
+            }
+        </select>
     </div>
 </div>
 <script>
-    function filterGenre(genre) {
+    function filterMovies(isSortedByAverageRating, filterOption, isSortedByDate) {
         $.ajax({
-            url: '/Movies/UpdateGenre',
-            type: 'POST',
-            data: { selectedGenre: genre },
+            url: '/Movies',
+            type: 'GET',
+            data: { 
+                isSortedByAverageRating: isSortedByAverageRating,
+                filterOption: filterOption,
+                isSortedByDate: isSortedByDate
+            },
             success: function (result) {
-                updateGenreTrigger(genre);
-                var updatedGenre = result.selectedGenre;
-                $('#moviesContainer').html(result);
+                $('#dynamicContent').html(result);
             },
             error: function (xhr, status, error) {
-                console.error('Error updating server genre:', error);
-                console.log('XHR:', xhr);
-                console.log('Status:', status);
-            }
-        });
-    }
-
-    function updateGenreTrigger(genre) {
-        $('#genreTrigger').text(genre);
-    }
-    function updateServerGenre(genre, callback) {
-        $.ajax({
-            url: '/Movies/UpdateGenre',
-            type: 'POST',
-            data: { selectedGenre: genre },
-            success: function (result) {
-                callback();
-            },
-            error: function (xhr, status, error) {
-                console.error('Error updating server genre:', error);
+                console.error('Error:', error);
                 console.log('XHR:', xhr);
                 console.log('Status:', status);
             }

@@ -1,0 +1,7 @@
+﻿@model MoviesViewModel
+
+@await Html.PartialAsync("_FrontOptions", Model)
+<div class="movies-disp" id="moviesContainer">
+    @await Html.PartialAsync("_MovieListPartial", Model)
+</div>
+

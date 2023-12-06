@@ -1,48 +1,25 @@
-﻿/* Genre segment */
-.dropdown {
-    position: relative;
-    display: inline-block;
+﻿.custom-dropdown {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
 }
 
-.genre-trigger {
-    cursor: pointer;
+.custom-dropdown select {
+  background-color: #1e1e1e;
+  color: #fff;
+  padding: .3em;
+  padding-right: .5em; 
+  border: 0;
+  margin: 0;
+  border-radius: 3px;
+  text-indent: 0.01px;
+  text-overflow: '';
+  -webkit-appearance: button; /* hide default arrow in chrome OSX */
 }
-
-.genre-list {
-    display: none;
-    position: absolute;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background: rgba(0,0,0,0.2);
-    z-index: 1;
-}
-.option .genre-list h2:hover {
-    text-decoration: none;
-}
-.genre-list button:hover {
-    background: rgba(0,0,0,0.5);
-}
-.genre-list button {
-    width: 100%;
-    padding: 10px;
-    text-align: left;
-    border: none;
+.option button {
     background: none;
-    cursor: pointer;
-}
-.opt-button button {
     border: none;
-    background: none;
 }
-/* Show the dropdown when the trigger is hovered or focused */
-.dropdown:hover .genre-list {
-    display: block;
-}
-
-.dropdown:focus-within .genre-list {
-    display: block;
-}
-/* New segment */
-
 .front-options .option .active {
     color: #ffffff;
     text-decoration: underline;
@@ -65,9 +42,15 @@
 .front-options .option {
     text-align: center;
 }
+select {
+    background: none;
+}
 .option {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
-    flex: 100%;
+    width: calc(100% / 1 / 3);
 }
 .filter-options {
     gap: 40px;

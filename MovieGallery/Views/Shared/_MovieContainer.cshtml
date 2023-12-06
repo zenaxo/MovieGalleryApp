@@ -1,6 +1,8 @@
 ﻿@model Movie
 <div class="movie-container" id="@Model.MovieID">
-    <img src='~/images/@(Model.MovieImage)' class="movie-image" data-movie-id="@Model.MovieID" alt="@Model.Title"/>
+    <a asp-controller="Movies" asp-action="Details" asp-route-id="@Model.MovieID">
+        <img src='~/images/@(Model.MovieImage)' class="movie-image" alt="@Model.Title" />
+    </a>
     <div class="movie-details">
         <div class="title-container">
             <h2>@Model.Title</h2>

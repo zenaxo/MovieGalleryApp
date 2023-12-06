@@ -1,15 +1,21 @@
 ﻿@model MoviesViewModel
 <form asp-controller="Movies" asp-action="Index" method="get" class="filter-options">
     <div class="form-check form-check-lg sort-by-ratings">
-        <input type="checkbox" name="isSortedByAverageRating" id="isSortedByAverageRating" value="true" class="form-check-input" @(Model.IsSortedByAverageRating ? "checked" : "")>
+        <input type="checkbox" name="isSortedByAverageRating" id="isSortedByAverageRating" value="true" class="form-check-input" @(Model.Options.IsSortedByAverageRating ? "checked" : "")>
         <label for="isSortedByAverageRating" class="form-check-label">Sort by Ratings</label>
     </div>
     <div class="form-group genre-filter">
-        <select id="genreFilter" asp-for="FilterOption" class="form-select" aria-label="Default select example">
+        <select id="genreFilter" asp-for="Options.FilterOption" class="form-select" aria-label="Default select example">
             <option value="All">All Genres</option>
-            @foreach (var genre in GlobalVariables.Genres)
+            @foreach (var genre in GlobalVariables.GenreList)
             {
-                <option value="@genre">@genre</option>
+                if(genre.Equals("All"))
+                {
+                    <option value="Genres">All genres</option>
+                } else
+                {
+                    <option value="@genre">@genre</option>
+                }
             }
         </select>
     </div>

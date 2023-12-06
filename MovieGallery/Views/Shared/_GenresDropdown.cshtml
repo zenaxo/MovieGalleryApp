@@ -1,0 +1,8 @@
+﻿@model MoviesViewModel
+<select id="genreFilter" class="h2" asp-for="Options.FilterOption" aria-label="Default select example" onchange="filterGenre(this.value, '@(Model.Options.IsSortedByAverageRating)'.toLowerCase())">
+    <option value="All" class="h2">All Genres</option>
+    @foreach (var genre in GlobalVariables.Genres)
+    {
+        <option value="@genre" class="h2">@genre</option>
+    }
+</select>

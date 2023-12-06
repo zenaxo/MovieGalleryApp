@@ -9,9 +9,9 @@ html {
 }
 
 :root {
-    --bg-box: #2e5090;
+    --bg-box: #4169E1;
     --bg-primary: #0F0F0F;
-    --bg-secondary: #2e5090;
+    --bg-secondary: #0c0c0c;
     --bg-buttonhover: #457acf;
     --footer-height: 300px;
 }
