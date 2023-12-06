@@ -9,11 +9,14 @@ namespace MovieGallery.Controllers
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly MovieMethods _movieMethods;
+        private readonly UserMethods _userMethods;
+        private readonly ILogger<MoviesController> _logger;
 
-        public MoviesController(IWebHostEnvironment webHostEnvironment)
+        public MoviesController(IWebHostEnvironment webHostEnvironment, ILogger<MoviesController> logger)
         {
             _webHostEnvironment = webHostEnvironment;
             _movieMethods = new MovieMethods();
+            _logger = logger;
         }
 
         public IActionResult Index(string filterOption = "Genres", bool isSortedByAverageRating = false, bool isSortedByDate = false)
@@ -264,6 +267,39 @@ namespace MovieGallery.Controllers
             }
             // If ModelState is not valid, return to the same view with validation errors
             return View(obj);
+        }
+
+        // LOGIN STUFF BELOW
+        public ActionResult Login()
+        {
+            return View();
+        }
+
+        public ActionResult Login(UserModel user)
+        {
+            string errormsg = "";
+
+            if(user != null)
+            {
+                List<UserModel> userList = _userMethods.GetUserList(out errormsg);
+                if (userList == null)
+                {
+                    errormsg = "Failed to check users against DB.";
+                }
+                else
+                {
+                    foreach(UserModel dbUser in userList)
+                    {
+                        if(dbUser.UserName == user.UserName && dbUser.Password == user.Password)
+                        {
+                            HttpContext.Session.SetString("UserName", user.UserName);
+                            return RedirectToAction("Index");
+                        }
+                    }
+                }
+            }
+
+            return View("Login", user);
         }
     }
 }

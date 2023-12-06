@@ -1,0 +1,5 @@
+CREATE TABLE Users (
+	UserID INT IDENTITY (1,1) PRIMARY KEY,
+	UserName VARCHAR(500),
+	Passwrd VARCHAR(500)
+);
