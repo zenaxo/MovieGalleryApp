@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MovieGallery.DAL;
 using MovieGallery.Models;
@@ -275,27 +276,18 @@ namespace MovieGallery.Controllers
             return View();
         }
 
+        [HttpPost]
         public ActionResult Login(UserModel user)
         {
             string errormsg = "";
 
             if(user != null)
             {
-                List<UserModel> userList = _userMethods.GetUserList(out errormsg);
-                if (userList == null)
+                bool userCorrect = _userMethods.CheckUser(user, out errormsg);
+                if(userCorrect)
                 {
-                    errormsg = "Failed to check users against DB.";
-                }
-                else
-                {
-                    foreach(UserModel dbUser in userList)
-                    {
-                        if(dbUser.UserName == user.UserName && dbUser.Password == user.Password)
-                        {
-                            HttpContext.Session.SetString("UserName", user.UserName);
-                            return RedirectToAction("Index");
-                        }
-                    }
+                    HttpContext.Session.SetString("UserName", user.UserName);
+                    return RedirectToAction("Index");
                 }
             }
 

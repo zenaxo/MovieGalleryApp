@@ -8,7 +8,8 @@ namespace MovieGallery.DAL
     {
         string connectionString = "Data Source = (localdb)\\MSSQLLocalDB;Initial Catalog = MovieGallery; Integrated Security = True; Connect Timeout = 30; Encrypt=False;Trust Server Certificate=False;Application Intent = ReadWrite; Multi Subnet Failover=False";
 
-        public List<UserModel> GetUserList(out string errormsg)
+        // Fixa så att den returnerar den user som man loggar in med om giltig, annars returnera null. Detta iom isAdmin skiten.
+        public bool CheckUser(UserModel user, out string errormsg)
         {
             errormsg = "";
             List<UserModel> userList = new List<UserModel>();
@@ -22,17 +23,28 @@ namespace MovieGallery.DAL
                     try
                     {
                         dbConnection.Open();
-                         
+
                         using (SqlDataReader reader = dbCommand.ExecuteReader())
                         {
-                            if(reader.HasRows)
+                            if (reader.HasRows)
                             {
-                                UserModel dbUser = new UserModel
+                                while (reader.Read())
                                 {
-                                    UserName = reader["Username"].ToString(),
-                                    Password = reader["Passwrd"].ToString()
-                                };
-                                userList.Add(dbUser);
+                                    UserModel readUser = new UserModel
+                                    {
+                                        UserName = reader["Username"].ToString(),
+                                        Password = reader["Passwrd"].ToString()
+                                    };
+                                    userList.Add(readUser);
+                                }
+                            }
+                        }
+
+                        foreach(UserModel dbUser in userList)
+                        {
+                            if(dbUser.UserName == user.UserName && dbUser.Password == user.Password)
+                            {
+                                return true;
                             }
                         }
                     }
@@ -43,7 +55,7 @@ namespace MovieGallery.DAL
                 }
             }
 
-            return userList;
+            return false;
         }
     }
 }
