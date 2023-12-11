@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE GetProducerId
+﻿CREATE PROCEDURE GetActorId
     @firstName VARCHAR(255),
     @lastName VARCHAR(255)
 AS

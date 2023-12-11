@@ -1,13 +1,14 @@
-﻿<div class="hero-wrapper">
+﻿@model MoviesViewModel
+<div class="hero-wrapper">
     <div class="hero-container">
-        <img src="~/images/Static/oppenheimerlg.jpg" />
+        <img src="~/images/@Model.HeroMovie.MovieBackgroundImage" />
         <div class="hero-info">
-            <h1>Oppenheimer 2023</h1>
+            <h1>@Model.HeroMovie.Title @Model.HeroMovie.ReleaseDate.ToString("yyyy")</h1>
             <p>
-                The story of American scientist, J. Robert Oppenheimer, and his role in the development of the atomic bomb.
+                @Model.HeroMovie.MovieDescription
             </p>
             <div class="stars-average">
-                @{var averageRating = 4.2;}
+                @{var averageRating = Model.HeroMovie.Rating.AverageRating;}
                 <h2>@averageRating.ToString("0.0")</h2>
                 <div>
                     @for (int i = 1; i <= 5; i++)
@@ -16,10 +17,12 @@
                         <i class="fa-solid fa-star @starClass"></i>
                     }
                 </div>
-                <p>526k</p>
+                <p>@Model.HeroMovie.Rating.NumberOfRatings</p>
             </div>
             <button class="btn-primary btn hero-btn">
-                Show more
+                <a asp-controller="Movies" asp-action="Details" asp-route-id="@Model.HeroMovie.MovieID">
+                    Show more
+                </a>
             </button>
         </div>
     </div>

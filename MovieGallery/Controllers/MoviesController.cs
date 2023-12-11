@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using MovieGallery.DAL;
 using MovieGallery.Models;
+using Newtonsoft.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MovieGallery.Controllers
 {
@@ -20,6 +22,8 @@ namespace MovieGallery.Controllers
         {
             ViewBag.Error = TempData["Error"];
 
+            string errorMessage;
+
             Options options = new Options
             {
                 FilterOption = filterOption,
@@ -27,8 +31,8 @@ namespace MovieGallery.Controllers
                 IsSortedByDate = isSortedByDate
             };
 
-            string errorMessage;
             var movies = _movieMethods.GetMovieList(options, out errorMessage);
+            var heroMovie = _movieMethods.GetHeroMovie(out errorMessage);
 
             if (!string.IsNullOrEmpty(errorMessage))
             {
@@ -39,7 +43,8 @@ namespace MovieGallery.Controllers
             var viewModel = new MoviesViewModel
             {
                 Movies = movies,
-                Options = options
+                Options = options,
+                HeroMovie = heroMovie,
             };
 
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
@@ -72,7 +77,7 @@ namespace MovieGallery.Controllers
         // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Movie obj, List<Producer> producers, int numRatings, string ratingValue)
+        public IActionResult Create(Movie obj)
         {
             try
             {
@@ -96,10 +101,22 @@ namespace MovieGallery.Controllers
                         // Set the MovieImage property to the unique filename
                         obj.MovieImage = uniqueFileName;
                     }
+                    if (obj.BackgroundFile != null && obj.BackgroundFile.Length > 0)
+                    {
+                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + obj.BackgroundFile.FileName;
+                        string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", uniqueFileName);
+
+                        using (var filestream = new FileStream(imagePath, FileMode.Create))
+                        {
+                            obj.BackgroundFile.CopyTo(filestream);
+                        }
+
+                        obj.MovieBackgroundImage = uniqueFileName;
+                    }
 
                     string error = "";
                     MovieMethods movieMethods = new MovieMethods();
-                    int i = movieMethods.InsertMovie(obj, producers, numRatings, ratingValue, out error);
+                    int i = movieMethods.InsertMovie(obj, out error);
                     TempData["Error"] = error;
 
                     if (i > 0)
@@ -212,8 +229,7 @@ namespace MovieGallery.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(Movie obj, int numRatings, string ratingValue, List<Producer> producers)
+        public IActionResult Edit(Movie obj)
         {
             if (ModelState.IsValid)
             {
@@ -239,13 +255,36 @@ namespace MovieGallery.Controllers
                 else
                 {
                     // No new image uploaded, retain the existing image path
-                    Movie existingMovie = _movieMethods.GetMovieById(obj.MovieID, out error); // Replace with your own method to get the existing movie details
+                    Movie existingMovie = _movieMethods.GetMovieById(obj.MovieID, out error);
                     obj.MovieImage = existingMovie.MovieImage;
                 }
 
+                if (obj.BackgroundFile != null && obj.BackgroundFile.Length > 0)
+                {
+                    // Generate a unique filename for the image
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + obj.BackgroundFile.FileName;
+
+                    // Set the path for saving the image in the wwwroot/images folder
+                    string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", uniqueFileName);
+
+                    // Save the new image to the specified path
+                    using (var fileStream = new FileStream(imagePath, FileMode.Create))
+                    {
+                        obj.BackgroundFile.CopyTo(fileStream);
+                    }
+
+                    // Set the MovieImage property to the unique filename
+                    obj.MovieBackgroundImage = uniqueFileName;
+                }
+                else
+                {
+                    // No new image uploaded, retain the existing image path
+                    Movie existingMovie = _movieMethods.GetMovieById(obj.MovieID, out error);
+                    obj.MovieBackgroundImage = existingMovie.MovieBackgroundImage;
+                }
                 int i = 0;
 
-                i = _movieMethods.UpdateMovie(obj, producers, numRatings, ratingValue, out error);
+                i = _movieMethods.UpdateMovie(obj, out error);
                 if (!string.IsNullOrEmpty(error))
                 {
                     TempData["Error"] = error;
@@ -256,14 +295,69 @@ namespace MovieGallery.Controllers
                     // Movie successfully updated, redirect to Index
                     return RedirectToAction("Index");
                 }
-                else
-                {
-                    // Handle the case where movie update failed
-                    ModelState.AddModelError("", $"Failed to update movie: {error}");
-                }
             }
             // If ModelState is not valid, return to the same view with validation errors
             return View(obj);
         }
+
+        [HttpPost]
+        public JsonResult SetHeroMovie(int movieId)
+        {
+            string errorMessage = string.Empty;
+            _movieMethods.SetHeroMovie(movieId, out errorMessage);
+
+            return Json(new { errorMessage });
+        }
+
+        [HttpPost]
+        public IActionResult AddProducer(Name producerName, int movieId)
+        {
+            string errorMsg = string.Empty;
+
+            _movieMethods.InsertMovieProducer(movieId, producerName, out errorMsg);
+
+            Movie movie = _movieMethods.GetMovieById(movieId, out errorMsg);
+
+            return PartialView("_EditProducersPartial", movie);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteProducer(int producerId, int movieId)
+        {
+            string errorMsg = string.Empty;
+
+            _movieMethods.DeleteMovieProducer(movieId, producerId, out errorMsg);
+
+            Movie movie = _movieMethods.GetMovieById(movieId, out errorMsg);
+
+            return PartialView("_EditProducersPartial", movie);
+
+        }
+
+        [HttpPost]
+        public IActionResult AddActor(Name actorName, int movieId)
+        {
+            string errorMsg = string.Empty;
+
+            _movieMethods.InsertCast(movieId, actorName, out errorMsg);
+
+            Movie movie = _movieMethods.GetMovieById(movieId, out errorMsg);
+
+            return PartialView("_EditActorsPartial", movie);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteActor(int actorId, int movieId)
+        {
+            string errorMsg = string.Empty;
+
+            _movieMethods.DeleteCast(movieId, actorId, out errorMsg);
+
+            Movie movie = _movieMethods.GetMovieById(movieId, out errorMsg);
+
+            return PartialView("_EditActorsPartial", movie);
+
+        }
+
     }
 }

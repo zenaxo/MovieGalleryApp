@@ -1,0 +1,31 @@
+﻿@model Movie
+<div class="producers-edit-container">
+    <h3 style="margin-top:20px;">Producers</h3>
+
+    <div class="delete-buttons-container">
+        @foreach (var producer in Model.Producers)
+        {
+            <button class="btn btn-danger producer-delete-btn"
+                    data-producer-id="@producer.ProducerId"
+                    data-movie-id="@Model.MovieID">
+                Remove @producer.FirstName @producer.LastName
+            </button>
+        }
+    </div>
+    <p id="producerValidationContainer" class="text-danger"></p>
+    <div class="add-producers-container">
+        <div class="form-group">
+            <label for="FirstName">First Name</label>
+            <input id="FirstName" class="form-control" type="text" />
+            <span class="text-danger" id="FirstNameValidation"></span>
+        </div>
+        <div class="form-group">
+            <label for="LastName">Last Name</label>
+            <input id="LastName" class="form-control" type="text" />
+            <span class="text-danger" id="LastNameValidation"></span>
+        </div>
+        <button class="btn btn-primary producer-btn add-producer-btn" data-movie-id="@Model.MovieID" style="margin-top:20px;">
+            Add Producer
+        </button>
+    </div>
+</div>

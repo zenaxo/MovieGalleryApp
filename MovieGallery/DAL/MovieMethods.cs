@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using MovieGallery.Models;
+using Newtonsoft.Json;
 using System.Data;
 
 namespace MovieGallery.DAL
@@ -10,16 +11,232 @@ namespace MovieGallery.DAL
 
         private readonly RatingMethods _ratingMethods;
         private readonly ProducerMethods _producerMethods;
+        private readonly ActorMethods _actorMethods;
         public MovieMethods()
         {
             _ratingMethods = new RatingMethods();
             _producerMethods = new ProducerMethods();
+            _actorMethods = new ActorMethods();
         }
         private SqlConnection CreateConnection()
         {
             SqlConnection dbConnection = new SqlConnection(connectionString);
             dbConnection.Open();
             return dbConnection;
+        }
+
+        public int DeleteMovieProducer(int movieId, int producerId, out string errorMessage)
+        {
+            string errormMessage = string.Empty;
+            return _producerMethods.DeleteMovieProducer(movieId, producerId, out errorMessage);
+        }
+        public int InsertMovieProducer(int movieId, Name name, out string errorMessage)
+        {
+            string errormMessage = string.Empty;
+            return _producerMethods.InsertMovieProducer(name.FirstName, name.LastName, movieId, out errorMessage);
+        }
+
+        public int DeleteCast(int movieId, int actorId, out string errorMessage)
+        {
+            string errormMessage = string.Empty;
+            return _actorMethods.DeleteCast(movieId, actorId, out errorMessage);
+        }
+        public int InsertCast(int movieId, Name name, out string errorMessage)
+        {
+            string errormMessage = string.Empty;
+            return _actorMethods.InsertCast(name.FirstName, name.LastName, movieId, out errorMessage);
+        }
+        private bool HeroMovieExists(out string errorMessage)
+        {
+            errorMessage = "";
+            bool isTableEmpty = false;
+
+            using (SqlConnection dbConnection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand dbCommand = new SqlCommand("IsHeroMovieTableEmpty", dbConnection))
+                {
+                    try
+                    {
+                        dbConnection.Open();
+
+                        // Set the command type to StoredProcedure
+                        dbCommand.CommandType = CommandType.StoredProcedure;
+
+                        // Execute the stored procedure and get the result
+                        object result = dbCommand.ExecuteScalar();
+
+                        // Check if the result is DBNull or not
+                        if (result != DBNull.Value)
+                        {
+                            // Convert the result to int
+                            int rowCount = Convert.ToInt32(result);
+
+                            // Check the result to determine if the table is empty
+                            isTableEmpty = rowCount == 1;
+                        }
+                        else
+                        {
+                            // Handle DBNull value (considering the table is not empty)
+                            isTableEmpty = false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        errorMessage = $"Error checking if HeroMovie table is empty: {ex.Message}";
+                        // You may log or handle the exception according to your application's needs
+                    }
+                }
+            }
+
+            return !isTableEmpty;
+        }
+        public Movie GetHeroMovie(out string errorMessage)
+        {
+            errorMessage = "";
+            Movie movie = new Movie();
+
+            // If the hero movie does not exist...
+            if(!HeroMovieExists(out errorMessage))
+            {
+                // Retrieve the latest added movie
+                movie = GetLatestAddedMovie(out errorMessage);
+                // Set the hero movie
+                SetHeroMovie(movie.MovieID, out errorMessage);
+                // Return that movie
+                return movie;
+            }
+
+            // The hero movie exists...
+
+           using (SqlConnection dbConnection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand dbCommand = new SqlCommand("GetHeroMovie", dbConnection)) {
+
+                    dbCommand.CommandType = CommandType.StoredProcedure;
+
+                    try
+                    {
+                        dbConnection.Open();
+
+                        SqlParameter outputParameter = new SqlParameter("@MovieID", SqlDbType.Int);
+                        outputParameter.Direction = ParameterDirection.Output;
+                        dbCommand.Parameters.Add(outputParameter);
+
+                        dbCommand.ExecuteNonQuery();
+
+                        int movieId = Convert.ToInt32(outputParameter.Value);
+
+                        movie = GetMovieById(movieId, out errorMessage);
+
+                    }
+                    catch (Exception e)
+                    {
+                        errorMessage = "Error retrieving hero movie:" + e.Message;
+                    }
+                }
+            }
+
+            return movie;
+
+        }
+
+        public int SetHeroMovie(int movieId, out string errorMessage)
+        {
+            errorMessage = "";
+            int affectedRows = -1;
+
+            try
+            {
+                using (SqlConnection dbConnection = new SqlConnection(connectionString))
+                {
+                    dbConnection.Open();
+
+                    using (SqlCommand dbCommand = new SqlCommand("SetHeroMovie", dbConnection))
+                    {
+                        dbCommand.CommandType = CommandType.StoredProcedure;
+
+                        // Add parameters
+                        dbCommand.Parameters.AddWithValue("@InputMovieID", movieId);
+
+                        // Execute the stored procedure
+                        affectedRows = dbCommand.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+            }
+
+            return affectedRows;
+        }
+        public Movie GetLatestAddedMovie(out string errorMessage)
+        {
+            Movie latestAddedMovie = null;
+            errorMessage = "";
+
+            using (SqlConnection dbConnection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand dbCommand = new SqlCommand("GetLatestAddedMovie", dbConnection))
+                {
+                    dbCommand.CommandType = CommandType.StoredProcedure;
+
+                    try
+                    {
+                        dbConnection.Open();
+
+                        using (SqlDataReader reader = dbCommand.ExecuteReader())
+                        {
+                            if (reader.HasRows)
+                            {
+                                while (reader.Read())
+                                {
+                                    var movieId = Convert.ToInt32(reader["MovieID"]);
+                                    latestAddedMovie = new Movie
+                                    {
+                                        MovieID = movieId,
+                                        Title = reader["Title"].ToString(),
+                                        Genre = reader["Genre"].ToString(),
+                                        MovieImage = reader["MovieImage"].ToString(),
+                                        MovieBackgroundImage = reader["MovieBackgroundImage"].ToString(),
+                                        ReleaseDate = Convert.ToDateTime(reader["ReleaseDate"]),
+                                        MovieDescription = reader["MovieDescription"].ToString(),
+                                        Rating = GetRatingForMovie(movieId, out errorMessage),
+                                        Producers = _producerMethods.GetProducersForMovie(movieId, out errorMessage),
+                                        Actors = _actorMethods.GetActorsForMovie(movieId, out errorMessage),
+                                    };
+                                }
+                            }
+                            else
+                            {
+                                latestAddedMovie = new Movie
+                                {
+                                    MovieID = -1,
+                                    Title = "Movie Not Found",
+                                    Genre = "Error",
+                                    MovieImage = "image-not-found.jpg",
+                                    MovieBackgroundImage = "image-not-found.jpg",
+                                    ReleaseDate = DateTime.MinValue,
+                                    MovieDescription = "No movie found with the specified criteria.",
+                                    Rating = new Rating
+                                    {
+                                        AverageRating = 0,
+                                        NumberOfRatings = 0,
+                                    }
+                                };
+                            }
+                        }
+
+                        errorMessage = "";
+                    }
+                    catch (Exception e)
+                    {
+                        errorMessage = e.Message;
+                    }
+                }
+            }
+
+            return latestAddedMovie;
         }
         public List<Movie> GetAllMovies(out string errorMessage)
         {
@@ -48,6 +265,7 @@ namespace MovieGallery.DAL
                                         Title = reader["Title"].ToString(),
                                         Genre = reader["Genre"].ToString(),
                                         MovieImage = reader["MovieImage"].ToString(),
+                                        MovieBackgroundImage= reader["MovieBackgroundImage"].ToString(),
                                         ReleaseDate = Convert.ToDateTime(reader["ReleaseDate"]),
                                         MovieDescription = reader["MovieDescription"].ToString()
                                     };
@@ -101,6 +319,7 @@ namespace MovieGallery.DAL
                                         Title = reader["Title"].ToString(),
                                         Genre = reader["Genre"].ToString(),
                                         MovieImage = reader["MovieImage"].ToString(),
+                                        MovieBackgroundImage = reader["MovieBackgroundImage"].ToString(),
                                         ReleaseDate = Convert.ToDateTime(reader["ReleaseDate"]),
                                         MovieDescription = reader["MovieDescription"].ToString()
                                     };
@@ -154,6 +373,7 @@ namespace MovieGallery.DAL
                                         Title = reader["Title"].ToString(),
                                         Genre = reader["Genre"].ToString(),
                                         MovieImage = reader["MovieImage"].ToString(),
+                                        MovieBackgroundImage = reader["MovieBackgroundImage"].ToString(),
                                         ReleaseDate = Convert.ToDateTime(reader["ReleaseDate"])
                                     };
 
@@ -203,10 +423,12 @@ namespace MovieGallery.DAL
                                     Title = reader["Title"].ToString(),
                                     Genre = reader["Genre"].ToString(),
                                     MovieImage = reader["MovieImage"].ToString(),
+                                    MovieBackgroundImage = reader["MovieBackgroundImage"].ToString(),
                                     ReleaseDate = Convert.ToDateTime(reader["ReleaseDate"]),
                                     MovieDescription = reader["MovieDescription"].ToString(),
                                     Rating = GetRatingForMovie(movieId, out errorMessage),
                                     Producers = _producerMethods.GetProducersForMovie(movieId, out errorMessage),
+                                    Actors = _actorMethods.GetActorsForMovie(movieId, out errorMessage),
 
                                 };
                             }
@@ -264,6 +486,7 @@ namespace MovieGallery.DAL
             {
                 movie.Rating = GetRatingForMovie(movie.MovieID, out errormsg);
                 movie.Producers = _producerMethods.GetProducersForMovie(movie.MovieID, out errormsg);
+                movie.Actors = _actorMethods.GetActorsForMovie(movie.MovieID, out errormsg);
             }
             return results;
         }
@@ -284,7 +507,7 @@ namespace MovieGallery.DAL
             }
           
         }
-        public int InsertMovie(Movie movie, List<Producer> producers, int numRatings, string ratingValue, out string errormsg)
+        public int InsertMovie(Movie movie, out string errormsg)
         {
             using (SqlConnection dbConnection = CreateConnection())
             using (SqlTransaction transaction = dbConnection.BeginTransaction())
@@ -299,6 +522,7 @@ namespace MovieGallery.DAL
                         dbCommand.Parameters.Add("@title", SqlDbType.VarChar, 50).Value = movie.Title;
                         dbCommand.Parameters.Add("@genre", SqlDbType.VarChar, 50).Value = movie.Genre;
                         dbCommand.Parameters.Add("@image_url", SqlDbType.NVarChar, 1000).Value = movie.MovieImage;
+                        dbCommand.Parameters.Add("@image_large", SqlDbType.NVarChar, 1000).Value = movie.MovieBackgroundImage;
                         dbCommand.Parameters.Add("@release_date", SqlDbType.Date).Value = movie.ReleaseDate;
                         dbCommand.Parameters.Add("@movie_description", SqlDbType.VarChar).Value = movie.MovieDescription;
 
@@ -316,12 +540,7 @@ namespace MovieGallery.DAL
                             transaction.Commit();
                             errormsg = "";
 
-                            foreach(var producer in producers)
-                            {
-                                _producerMethods.InsertMovieProducer(producer.FirstName, producer.LastName, movieId, out errormsg);
-                            }
-
-                            _ratingMethods.GenerateRatings(movieId, numRatings, ratingValue, out errormsg);
+                            _ratingMethods.GenerateRatings(movieId, movie.NumRatings, movie.RatingValue, out errormsg);
 
                             return 1; // Success
                         }
@@ -340,7 +559,7 @@ namespace MovieGallery.DAL
                 }
             }
         }
-        public int UpdateMovie(Movie movie, List<Producer> producers, int numRatings, string ratingValue, out string errormsg)
+        public int UpdateMovie(Movie movie, out string errormsg)
         {
             using (SqlConnection dbConnection = new SqlConnection(connectionString))
             {
@@ -352,6 +571,7 @@ namespace MovieGallery.DAL
                     dbCommand.Parameters.Add("@title", SqlDbType.VarChar, 50).Value = movie.Title;
                     dbCommand.Parameters.Add("@genre", SqlDbType.VarChar, 50).Value = movie.Genre;
                     dbCommand.Parameters.Add("@image_url", SqlDbType.NVarChar, 1000).Value = movie.MovieImage;
+                    dbCommand.Parameters.Add("@image_large", SqlDbType.NVarChar, 1000).Value = movie.MovieBackgroundImage;
                     dbCommand.Parameters.Add("@release_date", SqlDbType.Date).Value = movie.ReleaseDate;
                     dbCommand.Parameters.Add("@movie_description", SqlDbType.VarChar).Value = movie.MovieDescription;
 
@@ -370,12 +590,7 @@ namespace MovieGallery.DAL
                                 transaction.Commit();
 
                                 // Generate ratings after updating the movie
-                                _ratingMethods.GenerateRatings(movie.MovieID, numRatings, ratingValue, out errormsg);
-
-                                foreach (var producer in producers)
-                                {
-                                    _producerMethods.InsertMovieProducer(producer.FirstName, producer.LastName, movie.MovieID, out errormsg);
-                                }
+                                _ratingMethods.GenerateRatings(movie.MovieID, movie.NumRatings, movie.RatingValue, out errormsg);
 
                                 return 1;
                             }

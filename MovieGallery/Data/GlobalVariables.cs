@@ -3,7 +3,7 @@
 public static class GlobalVariables
 {
     public static List<string> Genres { get; } = new List<string>();
-    public static List<string> GenreList { get; } = Genres;
+    public static List<string> GenreList { get; } = new List<string>();
     public static List<string> RatingValues { get; } = new List<string>();
     static GlobalVariables() {
 
@@ -21,7 +21,11 @@ public static class GlobalVariables
         RatingValues.Add("5");
 
         GenreList.Add("All");
-        GenreList.Reverse();
+        GenreList.Add("Action");
+        GenreList.Add("Drama");
+        GenreList.Add("Horror");
+        GenreList.Add("Comedy");
+        GenreList.Add("Animated");
 
     }
 }

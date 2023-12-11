@@ -51,6 +51,86 @@ namespace MovieGallery.DAL
 
             return producers;
         }
+
+        public int DeleteMovieProducer(int movieId, int producerId, out string errorMessage)
+        {
+            errorMessage = "";
+            int affectedRows = -1;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand dbCommand = new SqlCommand("DeleteMovieProducer", connection))
+                {
+                    dbCommand.CommandType = CommandType.StoredProcedure;
+
+                    dbCommand.Parameters.Add("@movieId", SqlDbType.Int).Value = movieId;
+                    dbCommand.Parameters.Add("@producerId", SqlDbType.Int).Value = producerId;
+
+                    try
+                    {
+                        connection.Open();
+
+                        affectedRows = dbCommand.ExecuteNonQuery();
+
+                        if (affectedRows == 1)
+                        {
+                            return affectedRows;
+                        }
+                        else
+                        {
+                            errorMessage = "Error: Movie producer does not exist";
+                            return -1;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        errorMessage = e.Message;
+                        return -1;
+                    }
+                }
+            }
+        }
+        public List<Name> GetMovieProducerNames(int movieId, out string errorMessage)
+        {
+            errorMessage = "";
+
+            List<Name> movieProducerNames = new List<Name>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand dbCommand = new SqlCommand("GetMovieProducerNames", connection))
+                {
+                    dbCommand.CommandType = CommandType.StoredProcedure;
+
+                    dbCommand.Parameters.Add("@movieId", SqlDbType.Int).Value = movieId;
+
+                    try
+                    {
+                        connection.Open();
+
+                        using (SqlDataReader reader = dbCommand.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Name name = new Name
+                                {
+                                    FirstName = reader["FirstName"].ToString(),
+                                    LastName = reader["LastName"].ToString(),
+                                };
+
+                                movieProducerNames.Add(name);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        errorMessage = e.Message;
+                    }
+                }
+            }
+
+            return movieProducerNames;
+        }
         public int InsertMovieProducer(string firstName, string lastName, int movieId, out string errorMessage)
         {
             errorMessage = "";
@@ -61,7 +141,7 @@ namespace MovieGallery.DAL
             // If the producer already exists keep tryId as producerId, else insert a new producer and retrieve the Id
             int producerId = (tryId != -1) ? tryId : InsertProducer(firstName, lastName, out errorMessage);
 
-            if(MovieProducerExists(producerId, movieId, out errorMessage))
+            if(MovieProducerExists(producerId, movieId, out errorMessage) || string.IsNullOrEmpty(lastName) || string.IsNullOrEmpty(firstName))
             {
                 return -1;
             }
@@ -188,6 +268,7 @@ namespace MovieGallery.DAL
                 }
             }
         }
+
         private int InsertProducer(string firstName, string lastName, out string errorMessage)
         {
             errorMessage = string.Empty;

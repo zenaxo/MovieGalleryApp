@@ -1,0 +1,5 @@
+﻿CREATE PROCEDURE GetLatestAddedMovie
+AS
+	SELECT TOP 1 *
+	FROM Movies
+	ORDER BY MovieID DESC;

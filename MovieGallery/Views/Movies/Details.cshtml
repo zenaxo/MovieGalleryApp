@@ -9,22 +9,90 @@
         <p>@TempData["ErrorMessage"]</p>
     </div>
 }
-
+<div class="background-container">
+    <img src='/images/@(Model.MovieBackgroundImage)' class="movie-image" />
+</div>
 <div class="movie-detail">
-    <div class="upper-detail">
-        <img src='/images/@(Model.MovieImage)' class="movie-image" />
+    @*
+        The admin panel should only be shown if the user is authorized
+    *@
+    <div class="admin-options">
+        <button class="btn btn-primary" onclick="setHeroMovie(@Model.MovieID)">
+            Show on front page
+        </button>
+        <button class="btn btn-primary">
+            <a asp-controller="Movies" asp-action="Delete" asp-route-id="@Model.MovieID">
+                Delete movie
+            </a>
+        </button>
+        <button class="btn btn-primary">
+            <a asp-controller="Movies" asp-action="Edit" asp-route-id="@Model.MovieID">
+                Edit movie
+            </a>
+        </button>
+    </div>
+    <div>  
         <div class="movie-description">
-            <h2>@Model.Title (@Model.ReleaseDate.ToString("yyyy"))</h2>
-            <p>@Model.MovieDescription</p>
-            <div>
-                @foreach(var producer in Model.Producers)
+            <div class="title-container">
+                <h2>@Model.Title (@Model.ReleaseDate.ToString("yyyy"))</h2>
+                <div class="stars-average-upper">
+                    <div class="stars-container">
+                        @{
+                            var averageRating = Model.Rating.AverageRating;
+                        }
+                        <div>
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                string starClass = i <= averageRating ? "filled-star" : "empty-star";
+                                <i class="fa-solid fa-star @starClass"></i>
+                            }
+                        </div>
+                        <p>@Model.Rating.AverageRating.ToString("0.0")</p>
+                    </div>
+                </div>
+            </div>
+            <div class="director-cast">
+                <h2>Directors</h2>
+                @foreach (var producer in Model.Producers)
                 {
                     <p>@producer.FirstName @producer.LastName</p>
                 }
             </div>
+            <div class="director-cast">
+                <h2>Cast</h2>
+                @foreach (var actor in Model.Actors)
+                {
+                    <p>@actor.FirstName @actor.LastName</p>
+                }
+            </div>
+            <div class="movie-plot">
+                <h2>Plot</h2>
+                <p>@Model.MovieDescription</p>
+            </div>
         </div>
-        <h2>@ViewBag.Genre</h2>
     </div>
-    <partial name="_StarScoreboard" />
+    <div class="ratings">
+        <h3>Rating overview</h3>
+        <partial name="_StarScoreboard" />
+    </div>
 </div>
-<script src="~/js/filterGenre.js"></script>
+<script>
+    function setHeroMovie(movieId) {
+        $.ajax({
+            url: '/Movies/SetHeroMovie',
+            type: 'POST',
+            data: { movieId : movieId },
+            success: function (result) {
+                if (result.errorMessage !== '') {
+                    console.error(result.errorMessage);
+                } else {
+                    console.log('Hero movie set successfully.');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            }
+        })
+    }
+</script>
+

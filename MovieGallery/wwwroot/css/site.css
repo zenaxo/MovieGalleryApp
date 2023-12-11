@@ -25,17 +25,19 @@ a {
 
 html {
   position: relative;
-  min-height: 100%;
+}
+.container {
+    min-height: calc(100vh - 66px);
 }
 main {
-    min-height: calc(100vh - var(--footer-height));
     margin-bottom: 50px;
 }
 footer {
     height: var(--footer-height);
 }
 body {
-    margin-bottom: 60px;
+    display: flex;
+    flex-direction: column;
     background: var(--bg-primary);
     -moz-border-radius-topleft: 30px;
     -moz-border-radius-topright: 30px;

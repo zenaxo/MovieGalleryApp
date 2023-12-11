@@ -1,8 +1,9 @@
 ﻿@model MovieGallery.Models.Movie
 
+<link rel="stylesheet" href="~/css/formstyle.css" asp-append-version="true" />
 <h2 style="margin-top:20px;">Edit Movie</h2>
 
-<form asp-action="Edit" method="post" enctype="multipart/form-data">
+<form id="editMovieForm" asp-action="Edit" method="post" enctype="multipart/form-data">
     <div asp-validation-summary="All" class="text-danger"></div>
     <input type="hidden" asp-for="MovieID" />
     <h3 style="margin-top:20px;">Movie Details</h3>
@@ -24,8 +25,13 @@
     </div>
     <div class="form-group">
         <label asp-for="ImageFile"></label>
-        <input asp-for="ImageFile" type="file" class="form-control"/>
+        <input asp-for="ImageFile" type="file" class="form-control" />
         <span asp-validation-for="ImageFile" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="BackgroundFile"></label>
+        <input asp-for="BackgroundFile" type="file" class="form-control" />
+        <span asp-validation-for="BackgroundFile" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="ReleaseDate"></label>
@@ -40,62 +46,152 @@
     <h3 style="margin-top:20px;">Add ratings (Demo purpose)</h3>
     <div class="form-group">
         <label for="numRatings">Number of Ratings</label>
-        <input type="number" step="1" min="1" name="numRatings" class="form-control" />
+        <input type="number" step="1" min="0" name="numRatings" class="form-control" value="0" />
     </div>
     <div class="form-group">
-        <label for="ratingValue">Rating Value</label>
-        <select name="ratingValue" class="form-control">
+        <label asp-for="RatingValue">Rating Value</label>
+        <select asp-for="RatingValue" class="form-control">
             @foreach (var option in GlobalVariables.RatingValues)
             {
                 <option value="@option">@option</option>
             }
         </select>
     </div>
-    <h3 style="margin-top:20px;">Producers (Under construction)</h3>
-    <div id="producersContainer">
-        <div class="delete-producers">
-            @foreach(var producer in Model.Producers)
-            {
-                <p>@producer.FirstName @producer.LastName</p>
-            }
-        </div>
-        <div class="producer-form-group">
-            <label for="producers[0].FirstName">First Name</label>
-            <input type="text" asp-for="Producers[0].FirstName" class="form-control" />
-            <span asp-validation-for="Producers[0].FirstName" class="text-danger"></span>
-
-            <label for="producers[0].LastName">Last Name</label>
-            <input type="text" asp-for="Producers[0].LastName" class="form-control" />
-            <span asp-validation-for="Producers[0].LastName" class="text-danger"></span>
-        </div>
+    <div class="producers-container">
+        @await Html.PartialAsync("_EditProducersPartial", Model)
     </div>
-    <button type="button" class="btn btn-primary" id="addProducerBtn" style="margin-top: 20px;">Add Producer</button>
+    <div class="actors-container">
+        @await Html.PartialAsync("_EditActorsPartial", Model)
+    </div>
     <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Save changes</button>
 </form>
 
-<a asp-action="Index">Back to List</a>
-
-@section Scripts {
+@section scripts {
     <script>
-        // Script to dynamically add producer input fields
-        var producerCount = 1;
+        $(document).ready(function () {
+            $(".producers-container").on("click", ".producer-delete-btn", function (event) {
+                event.preventDefault();
 
-        $("#addProducerBtn").click(function () {
-            var newProducerGroup = $("#producersContainer .producer-form-group:first").clone();
+                var validationContainer = $("#producerValidationContainer");
+                validationContainer.empty();
 
-            // Update input names to ensure uniqueness
-            newProducerGroup.find("input").each(function () {
-                var currentName = $(this).attr("name");
-                var newName = currentName.replace("[0]", "[" + producerCount + "]");
-                $(this).attr("name", newName);
-                $(this).val(""); // Clear the input values
+                var producerId = $(this).data("producer-id");
+                var movieId = $(this).data("movie-id");
+
+                $.ajax({
+                    url: '/Movies/DeleteProducer',
+                    type: 'POST',
+                    data: { producerId: producerId, movieId: movieId },
+                    success: function (result) {
+                        $(".producers-container").html(result);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                        console.log('XHR:', xhr);
+                        console.log('Status:', status);
+                        alert('An error occurred while deleting the producer.');
+                    }
+                });
             });
 
-            $("#producersContainer").append(newProducerGroup);
-            producerCount++;
-        });
+            $(".producers-container").on("click", ".add-producer-btn", function (event) {
+                event.preventDefault();
+
+                var movieId = $(this).data("movie-id");
+                var firstName = $("#FirstName").val();
+                var lastName = $("#LastName").val();
+                var producerName = {
+                    FirstName: firstName,
+                    LastName: lastName
+                };
+                var validationContainer = $("#producerValidationContainer");
+                validationContainer.empty();
+
+                if (firstName === '' || lastName === '') {
+                    validationContainer.text('Please enter both first name and last name')
+                    return;
+                }
+
+                $.ajax({
+                    url: '/Movies/AddProducer',
+                    type: 'POST',
+                    data: { movieId: movieId, producerName: producerName },
+                    success: function (result) {
+                        $(".producers-container").html(result);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                        console.log('XHR:', xhr);
+                        console.log('Status:', status);
+                        alert('An error occurred while adding the producer.');
+                    }
+                });
+            });
         });
     </script>
 
-    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            $(".actors-container").on("click", ".actor-delete-btn", function (event) {
+                event.preventDefault();
+
+                var actorValidationContainer = $("#actorValidationContainer");
+                actorValidationContainer.empty();
+
+                var actorId = $(this).data("actor-id");
+                var movieId = $(this).data("movie-id");
+
+                $.ajax({
+                    url: '/Movies/DeleteActor',
+                    type: 'POST',
+                    data: { actorId: actorId, movieId: movieId },
+                    success: function (result) {
+                        $(".actors-container").html(result);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                        console.log('XHR:', xhr);
+                        console.log('Status:', status);
+                        alert('An error occurred while deleting the actor.');
+                    }
+                });
+            });
+
+            $(".actors-container").on("click", ".add-actor-btn", function (event) {
+                event.preventDefault();
+
+                var movieId = $(this).data("movie-id");
+                var firstName = $("#ActorFirstName").val();
+                var lastName = $("#ActorLastName").val();
+                var actorName = {
+                    FirstName: firstName,
+                    LastName: lastName
+                };
+                var actorValidationContainer = $("actorValidationContainer");
+                actorValidationContainer.empty();
+
+                if (firstName === '' || lastName === '') {
+                    actorValidationContainer.text('Please enter both first name and last name')
+                    return;
+                }
+
+                $.ajax({
+                    url: '/Movies/AddActor',
+                    type: 'POST',
+                    data: { movieId: movieId, actorName: actorName },
+                    success: function (result) {
+                        $(".actors-container").html(result);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                        console.log('XHR:', xhr);
+                        console.log('Status:', status);
+                        alert('An error occurred while adding the actor.');
+                    }
+                });
+            });
+        });
+    </script>
 }
+
+

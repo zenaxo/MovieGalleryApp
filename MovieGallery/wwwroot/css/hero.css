@@ -22,11 +22,14 @@
 .hero-info {
     margin-inline: 5vw;
     position: absolute;
-    transform: translateY(50%);
+    transform: translateY(30%);
     color: #ffff;
     z-index: 2;
     width: 300px;
 }
 .hero-btn {
     background: transparent;
+}
+.hero-btn a:hover {
+    color: #fff;
 }
