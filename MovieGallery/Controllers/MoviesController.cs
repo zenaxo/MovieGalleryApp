@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MovieGallery.DAL;
 using MovieGallery.Models;
@@ -11,11 +12,14 @@ namespace MovieGallery.Controllers
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly MovieMethods _movieMethods;
+        private readonly UserMethods _userMethods;
+        private readonly ILogger<MoviesController> _logger;
 
-        public MoviesController(IWebHostEnvironment webHostEnvironment)
+        public MoviesController(IWebHostEnvironment webHostEnvironment, ILogger<MoviesController> logger)
         {
             _webHostEnvironment = webHostEnvironment;
             _movieMethods = new MovieMethods();
+            _logger = logger;
         }
 
         public IActionResult Index(string filterOption = "Genres", bool isSortedByAverageRating = false, bool isSortedByDate = false)
@@ -359,5 +363,28 @@ namespace MovieGallery.Controllers
 
         }
 
+        // LOGIN STUFF BELOW
+        public ActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Login(UserModel user)
+        {
+            string errormsg = "";
+
+            if(user != null)
+            {
+                bool userCorrect = _userMethods.CheckUser(user, out errormsg);
+                if(userCorrect)
+                {
+                    HttpContext.Session.SetString("UserName", user.UserName);
+                    return RedirectToAction("Index");
+                }
+            }
+
+            return View("Login", user);
+        }
     }
 }
