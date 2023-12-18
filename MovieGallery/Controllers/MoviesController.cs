@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MovieGallery.DAL;
 using MovieGallery.Models;
-using Newtonsoft.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MovieGallery.Controllers
 {
@@ -19,6 +15,7 @@ namespace MovieGallery.Controllers
         {
             _webHostEnvironment = webHostEnvironment;
             _movieMethods = new MovieMethods();
+            _userMethods = new UserMethods();
             _logger = logger;
         }
 
@@ -80,80 +77,57 @@ namespace MovieGallery.Controllers
 
         // POST
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(Movie obj)
+        public IActionResult Create([FromForm] Movie obj)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    // Check if an image file is uploaded
-                    if (obj.ImageFile != null && obj.ImageFile.Length > 0)
+                    if (TrySaveImage(obj.ImageFile!, out string uniqueFileName))
                     {
-                        // Generate a unique filename for the image
-                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + obj.ImageFile.FileName;
-
-                        // Set the path for saving the image in the wwwroot/images folder
-                        string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", uniqueFileName);
-
-                        // Save the image to the specified path
-                        using (var fileStream = new FileStream(imagePath, FileMode.Create))
-                        {
-                            obj.ImageFile.CopyTo(fileStream);
-                        }
-
-                        // Set the MovieImage property to the unique filename
                         obj.MovieImage = uniqueFileName;
                     }
-                    if (obj.BackgroundFile != null && obj.BackgroundFile.Length > 0)
+
+                    if (TrySaveImage(obj.BackgroundFile!, out uniqueFileName))
                     {
-                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + obj.BackgroundFile.FileName;
-                        string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", uniqueFileName);
-
-                        using (var filestream = new FileStream(imagePath, FileMode.Create))
-                        {
-                            obj.BackgroundFile.CopyTo(filestream);
-                        }
-
                         obj.MovieBackgroundImage = uniqueFileName;
                     }
 
                     string error = "";
-                    MovieMethods movieMethods = new MovieMethods();
-                    int i = movieMethods.InsertMovie(obj, out error);
-                    TempData["Error"] = error;
+                    int i = _movieMethods.InsertMovie(obj, out error);
 
-                    if (i > 0)
-                    {
-                        // Movie successfully inserted, redirect to Index
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        // Handle the case where movie insertion failed
-                        ModelState.AddModelError("", $"Failed to insert movie: {error}");
-                    }
+                    return Ok();
                 }
-
-                // If ModelState is not valid, print out validation errors
-                foreach (var key in ModelState.Keys)
+                else
                 {
-                    foreach (var error in ModelState[key].Errors)
-                    {
-                        Console.WriteLine($"Field: {key}, Error: {error.ErrorMessage}");
-                    }
+                    return BadRequest(ModelState);
                 }
 
-                // Return to the same view with validation errors
-                return View(obj);
             }
             catch (Exception ex)
             {
-                // Log the exception for further analysis
-                Console.WriteLine($"Exception: {ex.Message}");
-                ModelState.AddModelError("", "An error occurred while processing your request. Please try again.");
-                return View(obj);
+                TempData["Error"] = ex;
+                return BadRequest(ex.Message);
             }
+        }
+        private bool TrySaveImage(IFormFile imageFile, out string uniqueFileName)
+        {
+            uniqueFileName = string.Empty;
+
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+                string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", uniqueFileName);
+
+                using (var fileStream = new FileStream(imagePath, FileMode.Create))
+                {
+                    imageFile.CopyTo(fileStream);
+                }
+
+                return true;
+            }
+
+            return false;
         }
         //GET
         public IActionResult Details(int id)

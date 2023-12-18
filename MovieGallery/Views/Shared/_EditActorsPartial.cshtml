@@ -5,10 +5,11 @@
     <div class="delete-buttons-container">
         @foreach (var actor in Model.Actors)
         {
-            <button class="btn btn-danger actor-delete-btn"
+            <button class="btn btn-danger actor-delete-btn delete-button"
                     data-actor-id="@actor.ActorId"
                     data-movie-id="@Model.MovieID">
-                Remove @actor.FirstName @actor.LastName
+               @actor.FirstName @actor.LastName
+                <i class="fa-solid fa-xmark" style="color: #ffffff;"></i>
             </button>
         }
     </div>

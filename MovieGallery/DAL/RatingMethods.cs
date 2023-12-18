@@ -10,6 +10,16 @@ namespace MovieGallery.DAL
     {
         string connectionString = "Data Source = (localdb)\\MSSQLLocalDB;Initial Catalog = MovieGallery; Integrated Security = True; Connect Timeout = 30; Encrypt=False;Trust Server Certificate=False;Application Intent = ReadWrite; Multi Subnet Failover=False";
 
+        private static int BiasedRandom(Random rnd, int minValue, int maxValue, double probabilityMultiplier)
+        {
+            double value = rnd.NextDouble();
+            double biasedValue = Math.Pow(value, probabilityMultiplier);
+            int range = maxValue - minValue;
+
+            int biasedRandom = minValue + (int)(biasedValue * range);
+
+            return Math.Clamp(biasedRandom, minValue, maxValue - 1);
+        }
         public void GenerateRatings(int movieId, int numRatings, string ratingValue, out string errormsg)
         {
             errormsg = "";
@@ -20,12 +30,16 @@ namespace MovieGallery.DAL
 
                 for (int i = 0; i < numRatings; i++)
                 {
-                    int rating = rnd.Next(1, 6);
+                    int maxRating = 5;
+                    // Lower value yields higher bias for higher ratings
+                    double probabilityMultiplier = 0.4;
+
+                    int rating = BiasedRandom(rnd, 1, maxRating + 1, probabilityMultiplier);
+
                     string result = AddRating(movieId, rating);
 
                     if (!string.IsNullOrEmpty(result))
                     {
-                        // Handle the error (log, return, etc.)
                         errormsg += result + Environment.NewLine;
 
                         break;

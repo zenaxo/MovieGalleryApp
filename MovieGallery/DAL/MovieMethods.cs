@@ -518,7 +518,6 @@ namespace MovieGallery.DAL
                     {
                         dbCommand.CommandType = CommandType.StoredProcedure;
 
-                        // Add parameters
                         dbCommand.Parameters.Add("@title", SqlDbType.VarChar, 50).Value = movie.Title;
                         dbCommand.Parameters.Add("@genre", SqlDbType.VarChar, 50).Value = movie.Genre;
                         dbCommand.Parameters.Add("@image_url", SqlDbType.NVarChar, 1000).Value = movie.MovieImage;
@@ -526,7 +525,6 @@ namespace MovieGallery.DAL
                         dbCommand.Parameters.Add("@release_date", SqlDbType.Date).Value = movie.ReleaseDate;
                         dbCommand.Parameters.Add("@movie_description", SqlDbType.VarChar).Value = movie.MovieDescription;
 
-                        // Output parameter for movieId
                         SqlParameter movieIdParam = new SqlParameter("@movieId", SqlDbType.Int);
                         movieIdParam.Direction = ParameterDirection.Output;
                         dbCommand.Parameters.Add(movieIdParam);
@@ -541,6 +539,15 @@ namespace MovieGallery.DAL
                             errormsg = "";
 
                             _ratingMethods.GenerateRatings(movieId, movie.NumRatings, movie.RatingValue, out errormsg);
+
+                            foreach (var producer in movie.Producers)
+                            {
+                                _producerMethods.InsertMovieProducer(producer.FirstName, producer.LastName, movieId, out errormsg);
+                            }
+                            foreach (var actor in movie.Actors)
+                            {
+                                _actorMethods.InsertCast(actor.FirstName, actor.LastName, movieId, out errormsg);
+                            }
 
                             return 1; // Success
                         }

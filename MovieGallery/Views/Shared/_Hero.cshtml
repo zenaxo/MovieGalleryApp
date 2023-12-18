@@ -1,7 +1,7 @@
 ﻿@model MoviesViewModel
 <div class="hero-wrapper">
     <div class="hero-container">
-        <img src="~/images/@Model.HeroMovie.MovieBackgroundImage" />
+        <img src="~/images/@Model.HeroMovie.MovieBackgroundImage" alt="@Model.HeroMovie.Title" />
         <div class="hero-info">
             <h1>@Model.HeroMovie.Title @Model.HeroMovie.ReleaseDate.ToString("yyyy")</h1>
             <p>
@@ -19,11 +19,9 @@
                 </div>
                 <p>@Model.HeroMovie.Rating.NumberOfRatings</p>
             </div>
-            <button class="btn-primary btn hero-btn">
-                <a asp-controller="Movies" asp-action="Details" asp-route-id="@Model.HeroMovie.MovieID">
-                    Show more
-                </a>
-            </button>
+            <a asp-controller="Movies" asp-action="Details" asp-route-id="@Model.HeroMovie.MovieID" class="btn btn-primary hero-btn">
+                Show more
+            </a>
         </div>
     </div>
 </div>

@@ -7,45 +7,45 @@
     <div class="option toggle">
         @if(!Model.Options.IsSortedByAverageRating)
         {
-            <button onclick="filterMovies(
+            <button class="@topRatedClass h3 text-white text-opacity-25" onclick="filterMovies(
                         '@(!Model.Options.IsSortedByAverageRating)'.toLowerCase(),
                         '@Model.Options.FilterOption',
                         false)">
-                <h2 class="@topRatedClass">Top rated</h2>
+                Top rated
             </button>
         }
         else
         {
-            <button onclick="filterMovies(
+            <button class="@topRatedClass h3 text-white" onclick="filterMovies(
                         '@(!Model.Options.IsSortedByAverageRating)'.toLowerCase(),
                         '@Model.Options.FilterOption',
                         '@(Model.Options.IsSortedByDate)'.toLowerCase())">
-                <h2 class="@topRatedClass">Top rated</h2>
+                Top rated
             </button>
         }
     </div>
     <div class="option toggle">
         @if(!Model.Options.IsSortedByDate)
         {
-            <button onclick="filterMovies(
+            <button class="@newClass h3 text-white text-opacity-25" onclick="filterMovies(
                         false,
                         '@Model.Options.FilterOption',
                         '@(!Model.Options.IsSortedByDate)'.toLowerCase())">
-                <h2 class="@newClass">New</h2>
+                New
             </button>
         }
         else
         {
-            <button onclick="filterMovies(
+            <button class="@newClass h3 text-white" onclick="filterMovies(
                         '@Model.Options.IsSortedByAverageRating'.toLowerCase(),
                         '@Model.Options.FilterOption',
                         '@(!Model.Options.IsSortedByDate)'.toLowerCase())">
-                <h2 class="@newClass">New</h2>
+                New
             </button>
         }
     </div>
     <div class="option custom-dropdown big">
-        <select id="genreFilter" class="h2" asp-for="Options.FilterOption" onchange="filterMovies(
+        <select id="genreFilter" class="h3 text-white" asp-for="Options.FilterOption" onchange="filterMovies(
                         '@(Model.Options.IsSortedByAverageRating)'.toLowerCase(),
                         this.value,
                         '@(Model.Options.IsSortedByDate)'.toLowerCase())">
@@ -53,11 +53,11 @@
             {
                 if (genre.Equals("All"))
                 {
-                    <option value="Genres" class="h2">All genres</option>
+                    <option value="Genres" class="h3">All genres</option>
                 }
                 else
                 {
-                    <option value="@genre" class="h2">@genre</option>
+                    <option value="@genre" class="h3">@genre</option>
                 }
             }
         </select>

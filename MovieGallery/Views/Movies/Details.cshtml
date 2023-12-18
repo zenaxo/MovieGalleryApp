@@ -2,6 +2,10 @@
 
 <link rel="stylesheet" href="~/css/moviedetail.css" asp-append-version="true" />
 
+@{
+    ViewData["Title"] = Model.Title;
+}
+
 <!-- Display potential errors -->
 @if (TempData["ErrorMessage"] != null)
 {
@@ -10,26 +14,22 @@
     </div>
 }
 <div class="background-container">
-    <img src='/images/@(Model.MovieBackgroundImage)' class="movie-image" />
+    <img src='/images/@(Model.MovieBackgroundImage)' class="movie-image" alt="@Model.Title" />
 </div>
 <div class="movie-detail">
     @*
         The admin panel should only be shown if the user is authorized
     *@
     <div class="admin-options">
-        <button class="btn btn-primary" onclick="setHeroMovie(@Model.MovieID)">
+        <button class="btn btn-primary" id="setHeroMovieBtn">
             Show on front page
         </button>
-        <button class="btn btn-primary">
-            <a asp-controller="Movies" asp-action="Delete" asp-route-id="@Model.MovieID">
-                Delete movie
-            </a>
-        </button>
-        <button class="btn btn-primary">
-            <a asp-controller="Movies" asp-action="Edit" asp-route-id="@Model.MovieID">
-                Edit movie
-            </a>
-        </button>
+        <a asp-controller="Movies" asp-action="Delete" asp-route-id="@Model.MovieID" class="btn btn-primary">
+            Delete movie
+        </a>
+        <a asp-controller="Movies" asp-action="Edit" asp-route-id="@Model.MovieID" class="btn btn-primary">
+            Edit movie
+        </a>
     </div>
     <div>  
         <div class="movie-description">
@@ -76,23 +76,32 @@
         <partial name="_StarScoreboard" />
     </div>
 </div>
-<script>
-    function setHeroMovie(movieId) {
-        $.ajax({
-            url: '/Movies/SetHeroMovie',
-            type: 'POST',
-            data: { movieId : movieId },
-            success: function (result) {
-                if (result.errorMessage !== '') {
-                    console.error(result.errorMessage);
-                } else {
-                    console.log('Hero movie set successfully.');
+@section scripts {
+    <script>
+        const btn = document.querySelector("#setHeroMovieBtn");
+        btn.addEventListener('click', setHeroMovie);
+
+        function setHeroMovie() {
+            $.ajax({
+                url: '/Movies/SetHeroMovie',
+                type: 'POST',
+                data: { movieId: '@Model.MovieID' },
+                success: function (result) {
+                    if (result.errorMessage !== '') {
+                        console.error(result.errorMessage);
+
+                    } else {
+                        btn.removeEventListener("click", setHeroMovie);
+                        btn.disabled = true;
+                        console.log('Hero movie set successfully.');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
                 }
-            },
-            error: function (xhr, status, error) {
-                console.error(error);
-            }
-        })
-    }
-</script>
+            })
+        }
+    </script>
+}
+
 
