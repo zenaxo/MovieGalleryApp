@@ -3,7 +3,8 @@
     <div class="hero-container">
         <img src="~/images/@Model.HeroMovie.MovieBackgroundImage" alt="@Model.HeroMovie.Title" />
         <div class="hero-info">
-            <h1>@Model.HeroMovie.Title @Model.HeroMovie.ReleaseDate.ToString("yyyy")</h1>
+            <h1>@Model.HeroMovie.Title</h1>
+            <h2 class="text">@Model.HeroMovie.ReleaseDate.ToString("yyyy")</h2>
             <p>
                 @Model.HeroMovie.MovieDescription
             </p>

@@ -1,7 +1,10 @@
-﻿public class Options
+﻿namespace MovieGallery.Models
 {
-    public bool IsSortedByAverageRating { get; set; } = false;
-    public string FilterOption { get; set; } = "Genres";
-    public bool IsSortedByDate { get; set; } = false;
+    public class Options
+    {
+        public bool IsSortedByAverageRating { get; set; } = true;
+        public string FilterOption { get; set; } = "Genres";
+        public bool IsSortedByDate { get; set; } = false;
 
+    }
 }

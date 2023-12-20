@@ -1,9 +1,11 @@
 ﻿@model Movie
-<div class="movie-container" id="@Model.MovieID">
-    <a asp-controller="Movies" asp-action="Details" asp-route-id="@Model.MovieID">
-        <img src='~/images/@(Model.MovieImage)' class="movie-image" alt="@Model.Title" />
-    </a>
-    <div class="movie-details">
+<div class="movie-card" id="@Model.MovieID">
+    <div class="movie-top">
+        <a asp-controller="Movies" asp-action="Details" asp-route-id="@Model.MovieID">
+            <img src='~/images/@(Model.MovieImage)' class="movie-image" alt="@Model.Title" />
+        </a>
+    </div>
+    <div class="movie-bottom">
         <div class="title-container">
             <h2>@Model.Title</h2>
         </div>

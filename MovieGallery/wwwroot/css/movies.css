@@ -14,34 +14,46 @@
   border-radius: 3px;
   text-indent: 0.01px;
   text-overflow: '';
+  cursor: pointer;
   -webkit-appearance: button; /* hide default arrow in chrome OSX */
 }
-.option button {
-    background: none;
-    border: none;
+.toggle button {
+    height: 120px;
+    flex: 1;
 }
-.front-options .option .active {
-    color: #ffffff;
-    text-decoration: underline;
-    text-underline-offset: 10px;
+.option button {
+    background-color: transparent;
+    border: none;
+    margin: 0;
+    padding-inline: 1rem;
 }
 .option h2 {
     cursor: pointer;
-    color: #b6b6b6;
+    color: #ffffff;
+}
+.option button {
+    border-radius: inherit;
+    transition: all 0.25s ease;
 }
 
-.option h2:hover {
-    text-decoration: underline;
-    text-underline-offset: 10px;
-}
 .front-options {
+    background: var(--bg-primary);
     margin-block: 20px;
     display: flex;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #b6b6b6;
+    align-items: center;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom: 1px solid grey;
+    border-image-outset: 5px;
 }
-.front-options .option {
-    text-align: center;
+
+.option button:hover {
+    background: #1e1e1e;
+}
+.option button.active {
+    background: #1e1e1e;
+    text-decoration: underline;
+    text-underline-offset: 15px;
 }
 select {
     background: none;
@@ -52,7 +64,9 @@ select {
     align-items: center;
     position: relative;
     width: calc(100% / 1 / 3);
+    min-height: 100%;
 }
+
 .filter-options {
     gap: 40px;
     display: flex;
@@ -60,26 +74,9 @@ select {
     margin-bottom: 50px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
-.filter-options > * {
-    margin-block: 10px;
-}
+
 .genre-filter {
     position: relative;
-}
-.movies-disp {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    gap: 2rem;
-}
-.title-container h2 {
-    overflow: hidden;
-    display: inline-block;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    width: 100%;
-    color: #ffff;
 }
 .header {
     margin-bottom: 20px;
@@ -91,29 +88,20 @@ select {
     padding-block: 20px;
     margin-left: 15px;
 }
-.movie-container {
-    position: relative;
-}
-.movie-container img {
-    height: 35vh;
-    aspect-ratio: 2 / 3;
-    border-radius: 20px;
-    cursor: pointer;
-    object-fit: cover;
-}
-.movie-container img:hover {
-    border: 2px solid white;
-}
+
 .movie-rating {
+    gap: 8px;
     display: flex;
-    gap: 10px;
+    flex-wrap: nowrap;
+    align-items: center;
+    font-size: 0.75rem;
 }
-.movie-details p, .movie-details h2 {
+.movie-rating p {
+    color: white;
     margin: 0;
-    color: #ffff;
 }
+/* Rating */
 .rating-statistic {
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -121,8 +109,8 @@ select {
 .filled-star {
     color: #ffd500;
 }
-
 .empty-star {
     color: #0e3960;
 }
+
 

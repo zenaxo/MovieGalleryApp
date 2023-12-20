@@ -12,7 +12,6 @@ class Actor {
     }
 }
 
-
 const errorList = document.querySelector('#validationMessages');
 
 const titleInput = document.querySelector('#titleInput');
@@ -135,6 +134,21 @@ function addActor() {
 
 }
 
+function setLoading(isLoading) {
+
+    const submitBtn = document.querySelector("#submitBtn");
+    const loadingIcon = document.createElement('i');
+    loadingIcon.classList = 'fa-solid fa-circle-notch fa-spin';
+
+    if (isLoading) {
+        submitBtn.insertBefore(loadingIcon, submitBtn.firstChild);
+        submitBtn.disabled = true;
+    } else {
+        submitBtn.removeChild(submitBtn.firstChild);
+        isLoading = false;
+        submitBtn.disabled = false;
+    }
+}
 function deleteActor(index) {
     Actors.splice(index, 1);
     renderActors();
@@ -155,7 +169,13 @@ function createActorDeleteBtn(Actor) {
     const btn = document.createElement("button");
     btn.className = 'delete-button btn btn-danger';
     btn.textContent = `${Actor.FirstName} ${Actor.LastName}`;
-    btn.innerHTML += `<i class="fa-solid fa-xmark" style="color: #ffffff;"></i>`;
+
+    const deleteIcon = document.createElement('i');
+    deleteIcon.classList = 'fa-solid fa-xmark';
+    deleteIcon.style = 'color: #ffffff';
+
+
+    btn.appendChild(deleteIcon);
 
     return btn;
 }
@@ -164,6 +184,7 @@ document.querySelector("#addActorBtn").addEventListener("click", addActor);
 
 document.querySelector("#postForm").addEventListener("submit", function (event) {
     event.preventDefault();
+    setLoading(true);
 
     clearValidation();
 
@@ -186,6 +207,7 @@ document.querySelector("#postForm").addEventListener("submit", function (event) 
 
     if (errors > 0) {
         firstErrorInput.scrollIntoView({ behavior: "smooth", block: "start" });
+        setLoading(false);
         return;
     }
 
@@ -222,6 +244,7 @@ async function submitForm() {
         if (response.ok) {
 
             window.location.href = '/Movies';
+            return;
 
         } else if (response.status === 400) {
 
@@ -234,6 +257,7 @@ async function submitForm() {
     } catch (error) {
         console.error(error);
     }
+    setLoading(false);
 }
 
 function handleValidationErrors(errors) {

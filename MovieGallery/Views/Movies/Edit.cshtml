@@ -1,20 +1,24 @@
 ﻿@model MovieGallery.Models.Movie
 
+@{
+    ViewData["Title"] = $"Edit {Model.Title}";
+}
+
 <link rel="stylesheet" href="~/css/formstyle.css" asp-append-version="true" />
 <h2 style="margin-top:20px;">Edit Movie</h2>
 
 <form id="editMovieForm" asp-action="Edit" method="post" enctype="multipart/form-data">
     <div asp-validation-summary="All" class="text-danger"></div>
-    <input type="hidden" asp-for="MovieID" />
+    <input type="hidden" asp-for="MovieID" id="movieId" value="@Model.MovieID" />
     <h3 style="margin-top:20px;">Movie Details</h3>
     <div class="form-group">
         <label asp-for="Title"></label>
-        <input asp-for="Title" class="form-control" />
+        <input asp-for="Title" class="form-control input-field" />
         <span asp-validation-for="Title" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="Genre"></label>
-        <select asp-for="Genre" class="form-select" aria-label="Default select example">
+        <select asp-for="Genre" class="form-select input-field" aria-label="Default select example">
             <option value="">Select Genre</option>
             @foreach (var genre in GlobalVariables.Genres)
             {
@@ -25,12 +29,12 @@
     </div>
     <div class="form-group">
         <label asp-for="ImageFile"></label>
-        <input asp-for="ImageFile" type="file" class="form-control" />
+        <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
         <span asp-validation-for="ImageFile" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="BackgroundFile"></label>
-        <input asp-for="BackgroundFile" type="file" class="form-control" />
+        <input asp-for="BackgroundFile" type="file" class="form-control" accept="image/*" />
         <span asp-validation-for="BackgroundFile" class="text-danger"></span>
     </div>
     <div class="form-group">
@@ -40,7 +44,7 @@
     </div>
     <div class="form-group">
         <label asp-for="MovieDescription"></label>
-        <textarea asp-for="MovieDescription" class="form-control"></textarea>
+        <textarea asp-for="MovieDescription" class="form-control input-field"></textarea>
         <span asp-validation-for="MovieDescription" class="text-danger"></span>
     </div>
     <h3 style="margin-top:20px;">Add ratings (Demo purpose)</h3>
@@ -63,135 +67,11 @@
     <div class="actors-container">
         @await Html.PartialAsync("_EditActorsPartial", Model)
     </div>
-    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Save changes</button>
+    <button type="submit" class="btn btn-primary" id="submitBtn" style="margin-top: 20px;">Save changes</button>
 </form>
 
 @section scripts {
-    <script>
-        $(document).ready(function () {
-            $(".producers-container").on("click", ".producer-delete-btn", function (event) {
-                event.preventDefault();
-
-                var validationContainer = $("#producerValidationContainer");
-                validationContainer.empty();
-
-                var producerId = $(this).data("producer-id");
-                var movieId = $(this).data("movie-id");
-
-                $.ajax({
-                    url: '/Movies/DeleteProducer',
-                    type: 'POST',
-                    data: { producerId: producerId, movieId: movieId },
-                    success: function (result) {
-                        $(".producers-container").html(result);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Error:', error);
-                        console.log('XHR:', xhr);
-                        console.log('Status:', status);
-                        alert('An error occurred while deleting the producer.');
-                    }
-                });
-            });
-
-            $(".producers-container").on("click", ".add-producer-btn", function (event) {
-                event.preventDefault();
-
-                var movieId = $(this).data("movie-id");
-                var firstName = $("#FirstName").val();
-                var lastName = $("#LastName").val();
-                var producerName = {
-                    FirstName: firstName,
-                    LastName: lastName
-                };
-                var validationContainer = $("#producerValidationContainer");
-                validationContainer.empty();
-
-                if (firstName === '' || lastName === '') {
-                    validationContainer.text('Please enter both first name and last name')
-                    return;
-                }
-
-                $.ajax({
-                    url: '/Movies/AddProducer',
-                    type: 'POST',
-                    data: { movieId: movieId, producerName: producerName },
-                    success: function (result) {
-                        $(".producers-container").html(result);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Error:', error);
-                        console.log('XHR:', xhr);
-                        console.log('Status:', status);
-                        alert('An error occurred while adding the producer.');
-                    }
-                });
-            });
-        });
-    </script>
-
-    <script>
-        $(document).ready(function () {
-            $(".actors-container").on("click", ".actor-delete-btn", function (event) {
-                event.preventDefault();
-
-                var actorValidationContainer = $("#actorValidationContainer");
-                actorValidationContainer.empty();
-
-                var actorId = $(this).data("actor-id");
-                var movieId = $(this).data("movie-id");
-
-                $.ajax({
-                    url: '/Movies/DeleteActor',
-                    type: 'POST',
-                    data: { actorId: actorId, movieId: movieId },
-                    success: function (result) {
-                        $(".actors-container").html(result);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Error:', error);
-                        console.log('XHR:', xhr);
-                        console.log('Status:', status);
-                        alert('An error occurred while deleting the actor.');
-                    }
-                });
-            });
-
-            $(".actors-container").on("click", ".add-actor-btn", function (event) {
-                event.preventDefault();
-
-                var movieId = $(this).data("movie-id");
-                var firstName = $("#ActorFirstName").val();
-                var lastName = $("#ActorLastName").val();
-                var actorName = {
-                    FirstName: firstName,
-                    LastName: lastName
-                };
-                var actorValidationContainer = $("actorValidationContainer");
-                actorValidationContainer.empty();
-
-                if (firstName === '' || lastName === '') {
-                    actorValidationContainer.text('Please enter both first name and last name')
-                    return;
-                }
-
-                $.ajax({
-                    url: '/Movies/AddActor',
-                    type: 'POST',
-                    data: { movieId: movieId, actorName: actorName },
-                    success: function (result) {
-                        $(".actors-container").html(result);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Error:', error);
-                        console.log('XHR:', xhr);
-                        console.log('Status:', status);
-                        alert('An error occurred while adding the actor.');
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="~/js/editMovie.js"></script>
 }
 
 

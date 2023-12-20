@@ -19,25 +19,19 @@ namespace MovieGallery.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index(string filterOption = "Genres", bool isSortedByAverageRating = false, bool isSortedByDate = false)
+        public IActionResult Index()
         {
+            Options options = new Options();
             ViewBag.Error = TempData["Error"];
 
             string errorMessage;
 
-            Options options = new Options
-            {
-                FilterOption = filterOption,
-                IsSortedByAverageRating = isSortedByAverageRating,
-                IsSortedByDate = isSortedByDate
-            };
 
             var movies = _movieMethods.GetMovieList(options, out errorMessage);
             var heroMovie = _movieMethods.GetHeroMovie(out errorMessage);
 
             if (!string.IsNullOrEmpty(errorMessage))
             {
-                // Handle the error, e.g., log it or display an error message
                 ViewBag.ErrorMessage = errorMessage;
             }
 
@@ -48,13 +42,30 @@ namespace MovieGallery.Controllers
                 HeroMovie = heroMovie,
             };
 
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateMovieList([FromBody] Options options)
+        {
+            string errorMessage;
+
+            var movies = _movieMethods.GetMovieList(options, out errorMessage);
+
+            if (!string.IsNullOrEmpty(errorMessage))
             {
-                // If it's an AJAX request, return a partial view
-                return PartialView("_DynamicContent", viewModel);
+                ViewBag.ErrorMessage = errorMessage;
             }
 
-            return View(viewModel);
+            var viewModel = new MoviesViewModel
+            {
+                Movies = movies,
+                Options = options,
+                // HeroMovie is not part of the partial view...
+                HeroMovie = movies.Count > 0 ? movies[0] : null,
+            };
+
+            return PartialView("_DynamicContent", viewModel);
         }
         public IActionResult Search(string title)
         {
@@ -86,11 +97,19 @@ namespace MovieGallery.Controllers
                     if (TrySaveImage(obj.ImageFile!, out string uniqueFileName))
                     {
                         obj.MovieImage = uniqueFileName;
+                    } 
+                    else
+                    {
+                        ViewBag["Error"] = "Only images are allowed";
                     }
 
                     if (TrySaveImage(obj.BackgroundFile!, out uniqueFileName))
                     {
                         obj.MovieBackgroundImage = uniqueFileName;
+                    }
+                    else
+                    {
+                        ViewBag["Error"] = "Only images are allowed";
                     }
 
                     string error = "";
@@ -110,11 +129,12 @@ namespace MovieGallery.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        public static readonly List<string> ImageExtensions = new List<string> { ".JPG", ".JPEG", ".JPE", ".BMP", ".GIF", ".PNG" };
         private bool TrySaveImage(IFormFile imageFile, out string uniqueFileName)
         {
             uniqueFileName = string.Empty;
 
-            if (imageFile != null && imageFile.Length > 0)
+            if (imageFile != null && imageFile.Length > 0 && ImageExtensions.Contains(Path.GetExtension(imageFile.FileName)))
             {
                 uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
                 string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", uniqueFileName);
@@ -207,56 +227,27 @@ namespace MovieGallery.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Movie obj)
+        public IActionResult Edit([FromForm] Movie obj)
         {
             if (ModelState.IsValid)
             {
                 string error = "";
-                // Check if an image file is uploaded
-                if (obj.ImageFile != null && obj.ImageFile.Length > 0)
+                if (TrySaveImage(obj.ImageFile!, out string uniqueFileName))
                 {
-                    // Generate a unique filename for the image
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + obj.ImageFile.FileName;
-
-                    // Set the path for saving the image in the wwwroot/images folder
-                    string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", uniqueFileName);
-
-                    // Save the new image to the specified path
-                    using (var fileStream = new FileStream(imagePath, FileMode.Create))
-                    {
-                        obj.ImageFile.CopyTo(fileStream);
-                    }
-
-                    // Set the MovieImage property to the unique filename
                     obj.MovieImage = uniqueFileName;
                 }
                 else
                 {
-                    // No new image uploaded, retain the existing image path
                     Movie existingMovie = _movieMethods.GetMovieById(obj.MovieID, out error);
                     obj.MovieImage = existingMovie.MovieImage;
                 }
 
-                if (obj.BackgroundFile != null && obj.BackgroundFile.Length > 0)
+                if (TrySaveImage(obj.BackgroundFile!, out uniqueFileName))
                 {
-                    // Generate a unique filename for the image
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + obj.BackgroundFile.FileName;
-
-                    // Set the path for saving the image in the wwwroot/images folder
-                    string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", uniqueFileName);
-
-                    // Save the new image to the specified path
-                    using (var fileStream = new FileStream(imagePath, FileMode.Create))
-                    {
-                        obj.BackgroundFile.CopyTo(fileStream);
-                    }
-
-                    // Set the MovieImage property to the unique filename
                     obj.MovieBackgroundImage = uniqueFileName;
                 }
                 else
                 {
-                    // No new image uploaded, retain the existing image path
                     Movie existingMovie = _movieMethods.GetMovieById(obj.MovieID, out error);
                     obj.MovieBackgroundImage = existingMovie.MovieBackgroundImage;
                 }
@@ -270,11 +261,9 @@ namespace MovieGallery.Controllers
 
                 if (i > 0)
                 {
-                    // Movie successfully updated, redirect to Index
                     return RedirectToAction("Index");
                 }
             }
-            // If ModelState is not valid, return to the same view with validation errors
             return View(obj);
         }
 

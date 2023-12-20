@@ -2,85 +2,37 @@
 @{
     var topRatedClass = Model.Options.IsSortedByAverageRating ? "active" : "";
     var newClass = Model.Options.IsSortedByDate ? "active" : "";
+
+    string isSortedByDate = Model.Options.IsSortedByDate.ToString().ToLower();
+    string isSortedByAverageRating = Model.Options.IsSortedByAverageRating.ToString().ToLower();
 }
 <div class="front-options">
+    <input type="hidden" for="@isSortedByDate" id="isSortedByDate" value="@isSortedByDate" />
+    <input type="hidden" for="@isSortedByAverageRating" id="isSortedByAverageRating" value="@isSortedByAverageRating" />
     <div class="option toggle">
-        @if(!Model.Options.IsSortedByAverageRating)
-        {
-            <button class="@topRatedClass h3 text-white text-opacity-25" onclick="filterMovies(
-                        '@(!Model.Options.IsSortedByAverageRating)'.toLowerCase(),
-                        '@Model.Options.FilterOption',
-                        false)">
-                Top rated
-            </button>
-        }
-        else
-        {
-            <button class="@topRatedClass h3 text-white" onclick="filterMovies(
-                        '@(!Model.Options.IsSortedByAverageRating)'.toLowerCase(),
-                        '@Model.Options.FilterOption',
-                        '@(Model.Options.IsSortedByDate)'.toLowerCase())">
-                Top rated
-            </button>
-        }
+        <button class="h3 text-white @topRatedClass" id="topRatedFilter">
+            Top rated
+        </button>
     </div>
     <div class="option toggle">
-        @if(!Model.Options.IsSortedByDate)
-        {
-            <button class="@newClass h3 text-white text-opacity-25" onclick="filterMovies(
-                        false,
-                        '@Model.Options.FilterOption',
-                        '@(!Model.Options.IsSortedByDate)'.toLowerCase())">
-                New
-            </button>
-        }
-        else
-        {
-            <button class="@newClass h3 text-white" onclick="filterMovies(
-                        '@Model.Options.IsSortedByAverageRating'.toLowerCase(),
-                        '@Model.Options.FilterOption',
-                        '@(!Model.Options.IsSortedByDate)'.toLowerCase())">
-                New
-            </button>
-        }
+        <button class="h3 text-white @newClass" id="dateFilter">
+            New
+        </button>
     </div>
     <div class="option custom-dropdown big">
-        <select id="genreFilter" class="h3 text-white" asp-for="Options.FilterOption" onchange="filterMovies(
-                        '@(Model.Options.IsSortedByAverageRating)'.toLowerCase(),
-                        this.value,
-                        '@(Model.Options.IsSortedByDate)'.toLowerCase())">
-            @foreach (var genre in GlobalVariables.GenreList)
+        <select id="genreFilterSelect" class="h3 text-white" >
+            <option value="@Model.Options.FilterOption">@Model.Options.FilterOption</option>
+            @if(Model.Options.FilterOption != "Genres")
             {
-                if (genre.Equals("All"))
-                {
-                    <option value="Genres" class="h3">All genres</option>
-                }
-                else
+                <option value="Genres">Genres</option>
+            }
+            @foreach (var genre in GlobalVariables.Genres)
+            {
+                @if(genre != Model.Options.FilterOption)
                 {
                     <option value="@genre" class="h3">@genre</option>
-                }
+                } 
             }
         </select>
     </div>
 </div>
-<script>
-    function filterMovies(isSortedByAverageRating, filterOption, isSortedByDate) {
-        $.ajax({
-            url: '/Movies',
-            type: 'GET',
-            data: {
-                isSortedByAverageRating: isSortedByAverageRating,
-                filterOption: filterOption,
-                isSortedByDate: isSortedByDate
-            },
-            success: function (result) {
-                $('#dynamicContent').html(result);
-            },
-            error: function (xhr, status, error) {
-                console.error('Error:', error);
-                console.log('XHR:', xhr);
-                console.log('Status:', status);
-            }
-        });
-    }
-</script>
