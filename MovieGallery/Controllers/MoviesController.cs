@@ -90,11 +90,12 @@ namespace MovieGallery.Controllers
         [HttpPost]
         public IActionResult Create([FromForm] Movie obj)
         {
+            Movie movie = obj;
             try
             {
                 if (ModelState.IsValid)
                 {
-                    if (TrySaveImage(obj.ImageFile!, out string uniqueFileName))
+                    if (TrySaveImage(obj.ImageFile, out string uniqueFileName))
                     {
                         obj.MovieImage = uniqueFileName;
                     } 
@@ -103,7 +104,7 @@ namespace MovieGallery.Controllers
                         ViewBag["Error"] = "Only images are allowed";
                     }
 
-                    if (TrySaveImage(obj.BackgroundFile!, out uniqueFileName))
+                    if (TrySaveImage(obj.BackgroundFile, out uniqueFileName))
                     {
                         obj.MovieBackgroundImage = uniqueFileName;
                     }
@@ -134,17 +135,21 @@ namespace MovieGallery.Controllers
         {
             uniqueFileName = string.Empty;
 
-            if (imageFile != null && imageFile.Length > 0 && ImageExtensions.Contains(Path.GetExtension(imageFile.FileName)))
+            if (imageFile != null && imageFile.Length > 0)
             {
-                uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
-                string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", uniqueFileName);
-
-                using (var fileStream = new FileStream(imagePath, FileMode.Create))
+                var extension = Path.GetExtension(imageFile.FileName);
+                if (ImageExtensions.Any(ext => ext.Equals(extension, StringComparison.OrdinalIgnoreCase)))
                 {
-                    imageFile.CopyTo(fileStream);
-                }
+                    uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+                    string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", uniqueFileName);
 
-                return true;
+                    using (var fileStream = new FileStream(imagePath, FileMode.Create))
+                    {
+                        imageFile.CopyTo(fileStream);
+                    }
+
+                    return true;
+                }
             }
 
             return false;
@@ -186,12 +191,29 @@ namespace MovieGallery.Controllers
 
             return View(movie);
         }
+        private void DeleteImageFile(string fileName)
+        {
+            if(string.IsNullOrEmpty(fileName)) {
+                return;
+            }
+            
+            string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", fileName);
+
+            if(System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
+            }
+        }
+
         public IActionResult ConfirmDelete(int id)
         {
             string errormsg;
 
             // Retrieve the movie using the ID passed in the form
             Movie movie = _movieMethods.GetMovieById(id, out errormsg);
+
+            DeleteImageFile(movie.MovieBackgroundImage);
+            DeleteImageFile(movie.MovieImage);
 
             if (movie == null)
             {
@@ -229,27 +251,33 @@ namespace MovieGallery.Controllers
         [HttpPost]
         public IActionResult Edit([FromForm] Movie obj)
         {
+            Movie movie = _movieMethods.GetMovieById(obj.MovieID, out string errormsg);
+
+            if(string.IsNullOrEmpty(errormsg))
+            {
+                TempData["Error"] = errormsg;
+            }
             if (ModelState.IsValid)
             {
                 string error = "";
                 if (TrySaveImage(obj.ImageFile!, out string uniqueFileName))
                 {
+                    DeleteImageFile(movie.MovieImage);
                     obj.MovieImage = uniqueFileName;
                 }
                 else
                 {
-                    Movie existingMovie = _movieMethods.GetMovieById(obj.MovieID, out error);
-                    obj.MovieImage = existingMovie.MovieImage;
+                    obj.MovieImage = movie.MovieImage;
                 }
 
                 if (TrySaveImage(obj.BackgroundFile!, out uniqueFileName))
                 {
+                    DeleteImageFile(movie.MovieBackgroundImage);
                     obj.MovieBackgroundImage = uniqueFileName;
                 }
                 else
                 {
-                    Movie existingMovie = _movieMethods.GetMovieById(obj.MovieID, out error);
-                    obj.MovieBackgroundImage = existingMovie.MovieBackgroundImage;
+                    obj.MovieBackgroundImage = movie.MovieBackgroundImage;
                 }
                 int i = 0;
 
@@ -270,8 +298,7 @@ namespace MovieGallery.Controllers
         [HttpPost]
         public JsonResult SetHeroMovie(int movieId)
         {
-            string errorMessage = string.Empty;
-            _movieMethods.SetHeroMovie(movieId, out errorMessage);
+            _movieMethods.SetHeroMovie(movieId, out string errorMessage);
 
             return Json(new { errorMessage });
         }
@@ -279,11 +306,20 @@ namespace MovieGallery.Controllers
         [HttpPost]
         public IActionResult AddProducer(Name producerName, int movieId)
         {
-            string errorMsg = string.Empty;
 
-            _movieMethods.InsertMovieProducer(movieId, producerName, out errorMsg);
+            _movieMethods.InsertMovieProducer(movieId, producerName, out string errorMsg);
+
+            if(!string.IsNullOrEmpty(errorMsg))
+            {
+                TempData["Error"] = errorMsg;
+            }
 
             Movie movie = _movieMethods.GetMovieById(movieId, out errorMsg);
+
+            if (!string.IsNullOrEmpty(errorMsg))
+            {
+                TempData["Error"] = errorMsg;
+            }
 
             return PartialView("_EditProducersPartial", movie);
         }
@@ -291,11 +327,19 @@ namespace MovieGallery.Controllers
         [HttpPost]
         public IActionResult DeleteProducer(int producerId, int movieId)
         {
-            string errorMsg = string.Empty;
+            _movieMethods.DeleteMovieProducer(movieId, producerId, out string errorMsg);
 
-            _movieMethods.DeleteMovieProducer(movieId, producerId, out errorMsg);
+            if(!string.IsNullOrEmpty(errorMsg))
+            {
+                TempData["Error"] = errorMsg;
+            }
 
             Movie movie = _movieMethods.GetMovieById(movieId, out errorMsg);
+
+            if (!string.IsNullOrEmpty(errorMsg))
+            {
+                TempData["Error"] = errorMsg;
+            }
 
             return PartialView("_EditProducersPartial", movie);
 
@@ -304,11 +348,19 @@ namespace MovieGallery.Controllers
         [HttpPost]
         public IActionResult AddActor(Name actorName, int movieId)
         {
-            string errorMsg = string.Empty;
+            _movieMethods.InsertCast(movieId, actorName, out string errorMsg);
 
-            _movieMethods.InsertCast(movieId, actorName, out errorMsg);
+            if (!string.IsNullOrEmpty(errorMsg))
+            {
+                TempData["Error"] = errorMsg;
+            }
 
             Movie movie = _movieMethods.GetMovieById(movieId, out errorMsg);
+
+            if (!string.IsNullOrEmpty(errorMsg))
+            {
+                TempData["Error"] = errorMsg;
+            }
 
             return PartialView("_EditActorsPartial", movie);
         }
@@ -316,11 +368,20 @@ namespace MovieGallery.Controllers
         [HttpPost]
         public IActionResult DeleteActor(int actorId, int movieId)
         {
-            string errorMsg = string.Empty;
 
-            _movieMethods.DeleteCast(movieId, actorId, out errorMsg);
+            _movieMethods.DeleteCast(movieId, actorId, out string errorMsg);
+
+            if (!string.IsNullOrEmpty(errorMsg))
+            {
+                TempData["Error"] = errorMsg;
+            }
 
             Movie movie = _movieMethods.GetMovieById(movieId, out errorMsg);
+
+            if (!string.IsNullOrEmpty(errorMsg))
+            {
+                TempData["Error"] = errorMsg;
+            }
 
             return PartialView("_EditActorsPartial", movie);
 
@@ -335,11 +396,16 @@ namespace MovieGallery.Controllers
         [HttpPost]
         public ActionResult Login(UserModel user)
         {
-            string errormsg = "";
 
             if(user != null)
             {
-                bool userCorrect = _userMethods.CheckUser(user, out errormsg);
+                bool userCorrect = _userMethods.CheckUser(user, out string errormsg);
+
+                if(!string.IsNullOrEmpty(errormsg))
+                {
+                    TempData["Error"] = errormsg;
+                }
+
                 if(userCorrect)
                 {
                     HttpContext.Session.SetString("UserName", user.UserName);

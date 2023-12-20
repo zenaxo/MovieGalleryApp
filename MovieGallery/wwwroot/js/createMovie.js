@@ -225,6 +225,8 @@ async function submitForm() {
     formData.append('NumRatings', numRatingsInput.value);
     formData.append('RatingValue', ratingValueInput.value);
 
+    console.log(formData);
+
     Producers.forEach((producer, index) => {
         formData.append(`Producers[${index}].FirstName`, producer.FirstName);
         formData.append(`Producers[${index}].LastName`, producer.LastName);

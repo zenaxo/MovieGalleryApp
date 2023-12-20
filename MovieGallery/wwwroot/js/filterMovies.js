@@ -55,6 +55,14 @@ async function sortByGenre() {
 }
 
 async function updateMovieList(options) {
+
+    const currentData = document.getElementById('moviesContainer');
+    currentData.innerHTML = '';
+
+    for (let i = 0; i < 9; i++) {
+        currentData.appendChild(createSkeleton());
+    }
+
     try {
         const response = await fetch('/Movies/UpdateMovieList', {
             method: 'POST',
@@ -68,9 +76,41 @@ async function updateMovieList(options) {
             const data = await response.text();
             container.innerHTML = data;
         } else {
+            container.innerHTML = currentData;
             console.error('Failed to update movie list:', response.statusText);
         }
     } catch (error) {
+        container.innerHTML = currentData;
         console.error('An error occurred while updating movie list:', error);
     }
+}
+
+function createSkeleton() {
+
+    var cardElement = document.createElement('div');
+    cardElement.className = 'card loading';
+
+    // Create the image element
+    var imageElement = document.createElement('div');
+    imageElement.className = 'image';
+
+    // Create the content element
+    var contentElement = document.createElement('div');
+    contentElement.className = 'content';
+
+    // Create the stripe elements
+    var stripeElement1 = document.createElement('div');
+    stripeElement1.className = 'stripe';
+
+    var stripeElement2 = document.createElement('div');
+    stripeElement2.className = 'stripe small';
+
+    // Append elements to their respective parent elements
+    contentElement.appendChild(stripeElement1);
+    contentElement.appendChild(stripeElement2);
+
+    cardElement.appendChild(imageElement);
+    cardElement.appendChild(contentElement);
+
+    return cardElement;
 }
