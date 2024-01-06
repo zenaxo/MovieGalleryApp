@@ -1,6 +1,8 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+
+@model MovieGallery.Models.UserModel
 @{
     ViewData["Title"] = "Login";
 }
@@ -9,15 +11,15 @@
 <section class="login-form-holder">
     <div class="background"></div>
     <div class="wrapper">
-        <form action="">
+        <form asp-action="Login">
             <h1>Login</h1>
             <div class="input-box">
-                <input type="text" placeholder="Username" required />
+                <input asp-for="UserName" type="text" placeholder="Username"  />
                 <i class="bx bxs-user"></i>
             </div>
 
             <div class="input-box">
-                <input type="password" placeholder="Password" required />
+                <input asp-for="Password" type="password" placeholder="Password" required />
                 <i class="bx bxs-lock-alt"></i>
             </div>
 
@@ -26,7 +28,8 @@
                 <a href="#">Forgot Password?</a>
             </div>
 
-            <button type="submit" class="btn">Login</button>
+            <input type="submit" value="Submit" class="btn" />
+            <!--<button type="submit" class="btn">Login</button>-->
 
             <div class="register-link">
                 <p>Don't have an account? <a href="#">Register</a></p>
