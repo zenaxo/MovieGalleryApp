@@ -12,13 +12,14 @@ namespace MovieGallery.DAL
         public bool CheckUser(UserModel user, out string errormsg)
         {
             errormsg = "";
-            List<UserModel> userList = new List<UserModel>();
 
             using(SqlConnection dbConnection = new SqlConnection(connectionString))
             {
                 using (SqlCommand dbCommand = new SqlCommand("GetUsers", dbConnection))
                 {
                     dbCommand.CommandType = CommandType.StoredProcedure;
+                    dbCommand.Parameters.Add("@userName", SqlDbType.VarChar).Value = user.UserName;
+                    dbCommand.Parameters.Add("@password", SqlDbType.VarChar).Value = user.Password;
 
                     try
                     {
@@ -27,22 +28,6 @@ namespace MovieGallery.DAL
                         using (SqlDataReader reader = dbCommand.ExecuteReader())
                         {
                             if (reader.HasRows)
-                            {
-                                while (reader.Read())
-                                {
-                                    UserModel readUser = new UserModel
-                                    {
-                                        UserName = reader["Username"].ToString(),
-                                        Password = reader["Passwrd"].ToString()
-                                    };
-                                    userList.Add(readUser);
-                                }
-                            }
-                        }
-
-                        foreach(UserModel dbUser in userList)
-                        {
-                            if(dbUser.UserName == user.UserName && dbUser.Password == user.Password)
                             {
                                 return true;
                             }

@@ -390,6 +390,7 @@ namespace MovieGallery.Controllers
         // LOGIN STUFF BELOW
         public ActionResult Login()
         {
+            ViewBag.Error = TempData["Error"];
             return View();
         }
 
@@ -400,6 +401,7 @@ namespace MovieGallery.Controllers
             if(user != null)
             {
                 bool userCorrect = _userMethods.CheckUser(user, out string errormsg);
+                TempData["ErrorMsg"] = errormsg;
 
                 if(!string.IsNullOrEmpty(errormsg))
                 {
@@ -414,6 +416,12 @@ namespace MovieGallery.Controllers
             }
 
             return View("Login", user);
+        }
+
+        public ActionResult Logout()
+        {
+            HttpContext.Session.Remove("UserName");
+            return RedirectToAction("Index");
         }
     }
 }
