@@ -8,6 +8,7 @@ BEGIN
         Title,
         Genre,
         MovieImage,
+		MovieBackgroundImage,
         ReleaseDate,
         MovieDescription
     FROM Movies;

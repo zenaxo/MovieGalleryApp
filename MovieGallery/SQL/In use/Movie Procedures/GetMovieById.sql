@@ -4,14 +4,16 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Retrieve movie details
-    SELECT
+    SELECT 
         MovieID,
         Title,
         Genre,
         MovieImage,
+		MovieBackgroundImage,
         ReleaseDate,
         MovieDescription
-    FROM Movies
-    WHERE MovieID = @movieId;
+    FROM 
+		Movies 
+    WHERE 
+		MovieID = @movieId;
 END;
