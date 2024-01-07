@@ -1,4 +1,6 @@
-﻿@model Movie
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor Accessor
+@model Movie
 
 <link rel="stylesheet" href="~/css/moviedetail.css" asp-append-version="true" />
 
@@ -17,20 +19,20 @@
     <img src='/images/@(Model.MovieBackgroundImage)' class="movie-image" alt="@Model.Title" />
 </div>
 <div class="movie-detail">
-    @*
-        The admin panel should only be shown if the user is authorized
-    *@
-    <div class="admin-options">
-        <button class="btn btn-primary" id="setHeroMovieBtn">
-            Show on front page
-        </button>
-        <a asp-controller="Movies" asp-action="Delete" asp-route-id="@Model.MovieID" class="btn btn-primary">
-            Delete movie
-        </a>
-        <a asp-controller="Movies" asp-action="Edit" asp-route-id="@Model.MovieID" class="btn btn-primary">
-            Edit movie
-        </a>
-    </div>
+    @if (Accessor.HttpContext.Session.GetString("UserName") != null)
+    {
+        <div class="admin-options">
+            <button class="btn btn-primary" id="setHeroMovieBtn">
+                Show on front page
+            </button>
+            <a asp-controller="Movies" asp-action="Delete" asp-route-id="@Model.MovieID" class="btn btn-primary">
+                Delete movie
+            </a>
+            <a asp-controller="Movies" asp-action="Edit" asp-route-id="@Model.MovieID" class="btn btn-primary">
+                Edit movie
+            </a>
+        </div>
+    }
     <div>  
         <div class="movie-description">
             <div class="title-container">

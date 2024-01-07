@@ -83,7 +83,11 @@ namespace MovieGallery.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            if(HttpContext.Session.GetString("UserName") !=  null)
+            {
+                return View();
+            }
+            return RedirectToAction("Index");
         }
 
         // POST
@@ -176,20 +180,24 @@ namespace MovieGallery.Controllers
 
         public IActionResult Delete(int id)
         {
-            string errormsg;
-            Movie movie = _movieMethods.GetMovieById(id, out errormsg);
-
-            if (movie == null)
+            if (HttpContext.Session.GetString("UserName") != null)
             {
-                return NotFound();
-            }
-            var viewModel = new MoviesViewModel();
-            if (!string.IsNullOrEmpty(errormsg))
-            {
-                TempData["Error"] = errormsg;
-            }
+                string errormsg;
+                Movie movie = _movieMethods.GetMovieById(id, out errormsg);
 
-            return View(movie);
+                if (movie == null)
+                {
+                    return NotFound();
+                }
+                var viewModel = new MoviesViewModel();
+                if (!string.IsNullOrEmpty(errormsg))
+                {
+                    TempData["Error"] = errormsg;
+                }
+
+                return View(movie);
+            }
+            return RedirectToAction("Index");
         }
         private void DeleteImageFile(string fileName)
         {
@@ -232,20 +240,24 @@ namespace MovieGallery.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            string errormsg;
-            Movie movie = _movieMethods.GetMovieById(id, out errormsg);
-
-            if (movie == null)
+            if (HttpContext.Session.GetString("UserName") != null)
             {
-                return NotFound();
-            }
+                string errormsg;
+                Movie movie = _movieMethods.GetMovieById(id, out errormsg);
 
-            if (!string.IsNullOrEmpty(errormsg))
-            {
-                TempData["Error"] = errormsg;
-            }
+                if (movie == null)
+                {
+                    return NotFound();
+                }
 
-            return View(movie);
+                if (!string.IsNullOrEmpty(errormsg))
+                {
+                    TempData["Error"] = errormsg;
+                }
+
+                return View(movie);
+            }
+            return RedirectToAction("Index"); 
         }
 
         [HttpPost]
