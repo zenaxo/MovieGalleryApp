@@ -6,6 +6,10 @@
 
 @{
     ViewData["Title"] = Model.Title;
+    ViewData["Description"] = Model.MovieDescription;
+    ViewData["Keywords"] = $"Movies, movie rating, movie bank, movie gallery, {Model.Title}";
+    ViewData["MovieTitle"] = Model.Title;
+    ViewData["MovieUrl"] = $"{GlobalVariables.PageUrl}/Movies/Details/{Model.MovieID}";
 }
 
 <!-- Display potential errors -->
@@ -33,7 +37,7 @@
             </a>
         </div>
     }
-    <div>  
+    <div>
         <div class="movie-description">
             <div class="title-container">
                 <h2>@Model.Title (@Model.ReleaseDate.ToString("yyyy"))</h2>
@@ -51,6 +55,9 @@
                         </div>
                         <p>@Model.Rating.AverageRating.ToString("0.0")</p>
                     </div>
+                </div>
+                <div class="image-container">
+                    <img src="/images/@(Model.MovieImage)" alt="@Model.Title" id="movieImage" />
                 </div>
             </div>
             <div class="director-cast">

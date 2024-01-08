@@ -5,6 +5,7 @@ public static class GlobalVariables
     public static List<string> Genres { get; } = new List<string>();
     public static List<string> GenreList { get; } = new List<string>();
     public static List<string> RatingValues { get; } = new List<string>();
+    public static string PageUrl { get; } = "localhost:7044";
     static GlobalVariables() {
 
         Genres.Add("Action");

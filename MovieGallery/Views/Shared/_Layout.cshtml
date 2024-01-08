@@ -6,7 +6,15 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="@ViewData["Description"]" />
+    <meta name="keywords" content="@ViewData["Keywords"]" />
+
+    <!-- Open Graph https://ogp.me/ -->
+    <meta property="og:title" content="@ViewData["MovieTitle"]" />
+    <meta property="og:url" content="@ViewData["MovieUrl"]" />
+
     <title>@ViewData["Title"] - MovieGallery</title>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
     <!-- CSS -->

@@ -8,7 +8,6 @@ namespace MovieGallery.DAL
     {
         string connectionString = "Data Source = (localdb)\\MSSQLLocalDB;Initial Catalog = MovieGallery; Integrated Security = True; Connect Timeout = 30; Encrypt=False;Trust Server Certificate=False;Application Intent = ReadWrite; Multi Subnet Failover=False";
 
-        // Fixa så att den returnerar den user som man loggar in med om giltig, annars returnera null. Detta iom isAdmin skiten.
         public bool CheckUser(UserModel user, out string errormsg)
         {
             errormsg = "";

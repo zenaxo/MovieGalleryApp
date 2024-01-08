@@ -1,12 +1,12 @@
 ﻿.movie-detail {
     color: #fff;
-    margin-block: 20px;
     display: flex;
     flex-direction: column;
     height: 100%;
+    margin-top: 20px;
 }
 .title-container {
-    margin-bottom: 150px;
+    margin-bottom: 20px;
 }
 .admin-options {
     display: flex;
@@ -21,13 +21,20 @@
     color: #fff;
     text-decoration: none;
 }
-
+.image-container img {
+    border-radius: 20px;
+    height: 25rem;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+}
 .movie-image {
-    height: 100%;
     width: 100%;
-    position: relative;
     object-fit: cover;
     filter: brightness(20%);
+    height: calc(100%);
+}
+.wrapper {
+    max-width: 100%;
 }
 .background-container {
     pointer-events: none;
@@ -36,7 +43,6 @@
     top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
     height: 100vh;
 }
 .movie-plot {

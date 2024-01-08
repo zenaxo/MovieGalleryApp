@@ -1,6 +1,10 @@
 ﻿@model MoviesViewModel
 @{
     ViewData["Title"] = "Movies";
+    ViewData["Description"] = "Discover the best movies on Movie Gallery!";
+    ViewData["Keywords"] = "Movies, movie rating, movie bank, movie gallery";
+    ViewData["MovieTitle"] = Model.HeroMovie.Title;
+    ViewData["MovieUrl"] = $"{GlobalVariables.PageUrl}/Movies/Details/{Model.HeroMovie.MovieID}";
 }
 <link rel="stylesheet" href="~/css/movies.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/hero.css" asp-append-version="true" />
@@ -18,26 +22,6 @@
     </div>
 </div>
 @section scripts {
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var scrolled = false;
-
-            // Scroll down to 80vh smoothly when the user starts scrolling
-            window.addEventListener("scroll", function () {
-                if (window.scrollY === 0) {
-                    // User is at the top again, reset scrolled to false
-                    scrolled = false;
-                } else if (!scrolled) {
-                    // Scroll down to 80vh smoothly when the user starts scrolling
-                    window.scrollTo({
-                        top: window.innerHeight * 0.69,
-                        behavior: "smooth"
-                    });
-                    scrolled = true;
-                }
-            });
-        });
-    </script>
     <script src="~/js/filterMovies.js"></script>
 }
 

@@ -1,10 +1,9 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-
-@model MovieGallery.Models.UserModel
+﻿@model MovieGallery.Models.UserModel
 @{
     ViewData["Title"] = "Login";
+    ViewData["Description"] = "Sign in to Movie Gallery";
+    ViewData["Keywords"] = $"Movies, movie rating, movie bank, movie gallery, login, sign in";
+    ViewData["MovieUrl"] = $"{GlobalVariables.PageUrl}/Movies/login";
 }
 <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
 
@@ -15,12 +14,12 @@
         <form asp-action="Login">
             <h1>Login</h1>
             <div class="input-box">
-                <input asp-for="UserName" type="text" placeholder="Username"  />
+                <input asp-for="UserName" type="text" placeholder="Username" maxlength = "20" required />
                 <i class="bx bxs-user"></i>
             </div>
 
             <div class="input-box">
-                <input asp-for="Password" type="password" placeholder="Password" required />
+                <input asp-for="Password" type="password" placeholder="Password"  minlength="8" maxlength="20" required />
                 <i class="bx bxs-lock-alt"></i>
             </div>
 
@@ -30,8 +29,6 @@
             </div>
 
             <input type="submit" value="Submit" class="btn" />
-            <!--<button type="submit" class="btn">Login</button>-->
-
             <div class="register-link">
                 <p>Don't have an account? <a href="#">Register</a></p>
             </div>

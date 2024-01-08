@@ -158,6 +158,7 @@ namespace MovieGallery.Controllers
 
             return false;
         }
+
         //GET
         public IActionResult Details(int id)
         {

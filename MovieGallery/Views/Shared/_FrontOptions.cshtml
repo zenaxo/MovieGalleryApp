@@ -7,8 +7,8 @@
     string isSortedByAverageRating = Model.Options.IsSortedByAverageRating.ToString().ToLower();
 }
 <div class="front-options">
-    <input type="hidden" for="@isSortedByDate" id="isSortedByDate" value="@isSortedByDate" />
-    <input type="hidden" for="@isSortedByAverageRating" id="isSortedByAverageRating" value="@isSortedByAverageRating" />
+    <input type="hidden" id="isSortedByDate" value="@isSortedByDate" />
+    <input type="hidden" id="isSortedByAverageRating" value="@isSortedByAverageRating" />
     <div class="option toggle">
         <button class="h3 text-white @topRatedClass" id="topRatedFilter">
             Top rated

@@ -2,6 +2,10 @@
 
 @{
     ViewData["Title"] = $"Edit {Model.Title}";
+    ViewData["Description"] = $"Edit {Model.Title}";
+    ViewData["Keywords"] = $"Movies, movie rating, movie bank, movie gallery, edit, {Model.Title}";
+    ViewData["MovieTitle"] = Model.Title;
+    ViewData["MovieUrl"] = $"{GlobalVariables.PageUrl}/Movies/Details/{Model.MovieID}";
 }
 
 <link rel="stylesheet" href="~/css/formstyle.css" asp-append-version="true" />
@@ -44,7 +48,7 @@
     </div>
     <div class="form-group">
         <label asp-for="MovieDescription"></label>
-        <textarea asp-for="MovieDescription" class="form-control input-field"></textarea>
+        <textarea asp-for="MovieDescription" class="form-control input-field" maxlength="200"></textarea>
         <span asp-validation-for="MovieDescription" class="text-danger"></span>
     </div>
     <h3 style="margin-top:20px;">Add ratings (Demo purpose)</h3>

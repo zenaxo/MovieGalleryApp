@@ -4,7 +4,8 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT MovieID, Title, Genre, MovieImage, ReleaseDate, MovieDescription
+    SELECT MovieID, Title
     FROM Movies
     WHERE Title LIKE '%' + @title + '%';
 END;
+
