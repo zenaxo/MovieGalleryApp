@@ -1,6 +1,5 @@
 ﻿@model MoviesViewModel
-
-<div class="hero-wrapper">
+<div class="hero-wrapper" id="heroWrapper">
     <div class="hero-container">
         <img src="~/images/@Model.HeroMovie.MovieBackgroundImage" alt="@Model.HeroMovie.Title" />
         <div class="hero-info">
@@ -10,7 +9,9 @@
                 @Model.HeroMovie.MovieDescription
             </p>
             <div class="stars-average">
-                @{var averageRating = Model.HeroMovie.Rating.AverageRating;}
+                @{
+                    var averageRating = Model.HeroMovie.Rating.AverageRating;
+                }
                 <h2>@averageRating.ToString("0.0")</h2>
                 <div>
                     @for (int i = 1; i <= 5; i++)
@@ -27,4 +28,5 @@
         </div>
     </div>
 </div>
+
 

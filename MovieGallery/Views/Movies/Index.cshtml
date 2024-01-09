@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="~/css/movies.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/hero.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/moviecard.css" asp-append-version="true" />
-<div class="page-wrapper" style="margin-top: 69vh">
+<div class="page-wrapper" id="pageWrapper">
     <partial name="_Hero" />
     @if (!string.IsNullOrEmpty(ViewBag.Error))
     {
@@ -23,5 +23,21 @@
 </div>
 @section scripts {
     <script src="~/js/filterMovies.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            var heroWrapper = document.getElementById('heroWrapper');
+            var pageWrapper = document.getElementById('pageWrapper');
+
+            var marginAdjusted = -100;
+
+            pageWrapper.style.marginTop = heroWrapper.clientHeight + marginAdjusted + 'px';
+
+            window.addEventListener('resize', function () {
+                pageWrapper.style.marginTop = heroWrapper.clientHeight + marginAdjusted + 'px';
+            });
+        });
+    </script>
 }
 

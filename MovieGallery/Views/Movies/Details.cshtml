@@ -19,70 +19,72 @@
         <p>@TempData["ErrorMessage"]</p>
     </div>
 }
-<div class="background-container">
-    <img src='/images/@(Model.MovieBackgroundImage)' class="movie-image" alt="@Model.Title" />
-</div>
-<div class="movie-detail">
-    @if (Accessor.HttpContext.Session.GetString("UserName") != null)
-    {
-        <div class="admin-options">
-            <button class="btn btn-primary" id="setHeroMovieBtn">
-                Show on front page
-            </button>
-            <a asp-controller="Movies" asp-action="Delete" asp-route-id="@Model.MovieID" class="btn btn-primary">
-                Delete movie
-            </a>
-            <a asp-controller="Movies" asp-action="Edit" asp-route-id="@Model.MovieID" class="btn btn-primary">
-                Edit movie
-            </a>
-        </div>
-    }
-    <div>
-        <div class="movie-description">
-            <div class="title-container">
-                <h2>@Model.Title (@Model.ReleaseDate.ToString("yyyy"))</h2>
-                <div class="stars-average-upper">
-                    <div class="stars-container">
-                        @{
-                            var averageRating = Model.Rating.AverageRating;
-                        }
-                        <div>
-                            @for (int i = 1; i <= 5; i++)
-                            {
-                                string starClass = i <= averageRating ? "filled-star" : "empty-star";
-                                <i class="fa-solid fa-star @starClass"></i>
+<div class="details-wrapper">
+    <div class="background-container" id="bgContainer">
+        <img src='/images/@(Model.MovieBackgroundImage)' class="movie-image" alt="@Model.Title" />
+    </div>
+    <div class="movie-detail">
+        @if (Accessor.HttpContext.Session.GetString("UserName") != null)
+        {
+            <div class="admin-options">
+                <button class="btn btn-primary" id="setHeroMovieBtn">
+                    Show on front page
+                </button>
+                <a asp-controller="Movies" asp-action="Delete" asp-route-id="@Model.MovieID" class="btn btn-primary">
+                    Delete movie
+                </a>
+                <a asp-controller="Movies" asp-action="Edit" asp-route-id="@Model.MovieID" class="btn btn-primary">
+                    Edit movie
+                </a>
+            </div>
+        }
+        <div>
+            <div class="movie-description">
+                <div class="title-container">
+                    <h2>@Model.Title (@Model.ReleaseDate.ToString("yyyy"))</h2>
+                    <div class="stars-average-upper">
+                        <div class="stars-container">
+                            @{
+                                var averageRating = Model.Rating.AverageRating;
                             }
+                            <div>
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    string starClass = i <= averageRating ? "filled-star" : "empty-star";
+                                    <i class="fa-solid fa-star @starClass"></i>
+                                }
+                            </div>
+                            <p>@Model.Rating.AverageRating.ToString("0.0")</p>
                         </div>
-                        <p>@Model.Rating.AverageRating.ToString("0.0")</p>
+                    </div>
+                    <div class="image-container">
+                        <img src="/images/@(Model.MovieImage)" alt="@Model.Title" id="movieImage" />
                     </div>
                 </div>
-                <div class="image-container">
-                    <img src="/images/@(Model.MovieImage)" alt="@Model.Title" id="movieImage" />
+                <div class="director-cast">
+                    <h2>Directors</h2>
+                    @foreach (var producer in Model.Producers)
+                    {
+                        <p>@producer.FirstName @producer.LastName</p>
+                    }
+                </div>
+                <div class="director-cast">
+                    <h2>Cast</h2>
+                    @foreach (var actor in Model.Actors)
+                    {
+                        <p>@actor.FirstName @actor.LastName</p>
+                    }
+                </div>
+                <div class="movie-plot">
+                    <h2>Plot</h2>
+                    <p>@Model.MovieDescription</p>
                 </div>
             </div>
-            <div class="director-cast">
-                <h2>Directors</h2>
-                @foreach (var producer in Model.Producers)
-                {
-                    <p>@producer.FirstName @producer.LastName</p>
-                }
-            </div>
-            <div class="director-cast">
-                <h2>Cast</h2>
-                @foreach (var actor in Model.Actors)
-                {
-                    <p>@actor.FirstName @actor.LastName</p>
-                }
-            </div>
-            <div class="movie-plot">
-                <h2>Plot</h2>
-                <p>@Model.MovieDescription</p>
-            </div>
         </div>
-    </div>
-    <div class="ratings">
-        <h3>Rating overview</h3>
-        <partial name="_StarScoreboard" />
+        <div class="ratings">
+            <h3>Rating overview</h3>
+            <partial name="_StarScoreboard" />
+        </div>
     </div>
 </div>
 @section scripts {
@@ -110,6 +112,18 @@
                 }
             })
         }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var backgroundImage = document.getElementById('bgContainer');
+            var contentWrapper = document.getElementById('contentHeight');
+
+            backgroundImage.style.height = contentWrapper.clientHeight + 66 + 'px';
+
+            window.addEventListener('resize', function () {
+                backgroundImage.style.height = contentWrapper.clientHeight + 66 + 'px';
+            })
+        })
     </script>
 }
 
