@@ -317,11 +317,6 @@ namespace MovieGallery.DAL
                                     {
                                         MovieID = Convert.ToInt32(reader["MovieID"]),
                                         Title = reader["Title"].ToString(),
-                                        Genre = reader["Genre"].ToString(),
-                                        MovieImage = reader["MovieImage"].ToString(),
-                                        MovieBackgroundImage = reader["MovieBackgroundImage"].ToString(),
-                                        ReleaseDate = Convert.ToDateTime(reader["ReleaseDate"]),
-                                        MovieDescription = reader["MovieDescription"].ToString()
                                     };
 
                                     results.Add(movie);
